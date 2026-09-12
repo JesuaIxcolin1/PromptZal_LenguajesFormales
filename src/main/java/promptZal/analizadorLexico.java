@@ -43,7 +43,7 @@ public class analizadorLexico {
             
             //*********************ESPACIOS Y TABULACIONES************************
             //Se ignoran pero se actualiza la posicion
-            if (actual == ' ' || actual == '\t') {
+            if (actual == ' ' || actual == '\t' || actual == '\r') {
 
                 posicion++;
                 columna++;
@@ -58,102 +58,168 @@ public class analizadorLexico {
                 columna = 1;
                 
                 
+                
             //*******************COMENTARIOS********************
-            // Ignora los comentarios
-            }else if(actual == '/' && posicion+1 < entrada.length() && entrada.charAt(posicion+1)== '/'){
+            }else if(actual == '/'){
                 
-                estado = estadoAFD.COMENTARIO_LINEA;
-                // Avanza dos caracteres por (//)
-                posicion+=2;
-                columna+=2;
+                int filaInicio = fila;
+                int columnaInicio = columna;
                 
-                while(posicion < entrada.length() && entrada.charAt(posicion) != '\n'){
+                // Se encontro el primer /
+                estado = estadoAFD.SLASH;
+                
+                posicion++;
+                columna++;
+                
+                
+                //*******************COMENTARIO DE LINEA********************
+                if(posicion < entrada.length() && entrada.charAt(posicion) == '/'){
+                    
+                    estado = estadoAFD.COMENTARIO_LINEA;
+                    
+                    //Avanza el segundo /
                     posicion++;
                     columna++;
-                
+                    
+                    //Ignora todo hasta encontrar salto de linea
+                    while(posicion < entrada.length() && entrada.charAt(posicion) != '\n'){
+                        
+                        posicion++;
+                        columna++;
+                    }
+                    
+                    
+                    
+                //*********************COMENTARIO DE BLOQUE*********************
+                }else if(posicion < entrada.length() && entrada.charAt(posicion) == '*'){
+                    
+                    estado = estadoAFD.COMENTARIO_BLOQUE;
+                    
+                    StringBuilder lexema = new StringBuilder();
+                    lexema.append('/');
+                    lexema.append('*');
+                    
+                    //Avanza el *
+                    posicion++;
+                    columna++;
+                    
+                    boolean comentarioCerrado = false;
+                    
+                    while(posicion < entrada.length()){
+                        
+                        char caracter = entrada.charAt(posicion);
+                        
+                        
+                        //Se encontro *
+                        if(caracter == '*'){
+                            
+                            estado = estadoAFD.ASTERISCO_COMENTARIO;
+                            
+                            lexema.append(caracter);
+                            
+                            posicion++;
+                            columna++;
+                            
+                            
+                            //Verifica si despues del * viene /
+                            if(posicion < entrada.length() && entrada.charAt(posicion) == '/'){
+                                
+                                lexema.append('/');
+                                
+                                posicion++;
+                                columna++;
+                                
+                                estado = estadoAFD.COMENTARIO_BLOQUE_CERRADO;
+                                
+                                comentarioCerrado = true;
+                                break;
+                                
+                            }else{
+                                
+                                estado = estadoAFD.COMENTARIO_BLOQUE;
+                            }
+                            
+                            
+                        //Salto de linea dentro del comentario
+                        }else if(caracter == '\n'){
+                            
+                            lexema.append(caracter);
+                            
+                            posicion++;
+                            fila++;
+                            columna = 1;
+                            
+                            
+                        //Cualquier otro caracter
+                        }else{
+                            
+                            lexema.append(caracter);
+                            
+                            posicion++;
+                            columna++;
+                        }
+                    }
+                    
+                    
+                    //Si el comentario no encontro */
+                    if(!comentarioCerrado){
+                        
+                        estado = estadoAFD.ERROR;
+                        
+                        errorLexico error = new errorLexico(
+                                lexema.toString(),
+                                "Comentario de Bloque sin cerrar",
+                                filaInicio,
+                                columnaInicio
+                        );
+                        
+                        listaErrores.add(error);
+                    }
+                    
+                    
+                //Si aparece / sin formar comentario
+                }else{
+                    
+                    estado = estadoAFD.ERROR;
+                    
+                    errorLexico error = new errorLexico(
+                            "/",
+                            "Caracter no reconocido",
+                            filaInicio,
+                            columnaInicio
+                    );
+                    
+                    listaErrores.add(error);
                 }
-            // Regresa al estado inicial
-            estado = estadoAFD.INICIAL;
                 
                 
-            //*********************COMENTARIOS DE BLOQUE*********************    
-            }else if(actual == '/' && posicion +1 < entrada.length() && entrada.charAt(posicion +1 )=='*'){
+                estado = estadoAFD.INICIAL;
                 
-                estado = estadoAFD.COMENTARIO_BLOQUE;
+                
+                
+            //*************************DIRECTIVAS*************************
+            }else if (actual == '@') {
                 
                 int filaInicio = fila;
                 int columnaInicio = columna;
                 
                 StringBuilder lexema = new StringBuilder();
-                lexema.append('/');
-                lexema.append('*');
                 
-                //Avanza dos caracteres por (/*)
-                posicion +=2;
-                columna +=2;
-                boolean comentarioCerrado = false;
                 
-                while(posicion < entrada.length()){
-                    char caracter = entrada.charAt(posicion);
-                    
-                    if(caracter == '*'){
-                        estado = estadoAFD.ASTERISCO_COMENTARIO;
-                        
-                        lexema.append(caracter);
-                        posicion++;
-                        columna++;
-                        
-                        if(posicion < entrada.length() && entrada.charAt(posicion) == '/'){
-                            lexema.append('/');
-                            
-                            posicion++;
-                            columna++;
-                            comentarioCerrado = true;
-                            break;
-                        }else{
-                            estado = estadoAFD.COMENTARIO_BLOQUE;
-                        }
-                    }else if( caracter == '\n'){
-                        
-                        lexema.append(caracter);
-                        posicion++;
-                        fila++;
-                        columna = 1;
-                    }else{
-                        
-                        lexema.append(caracter);
-                        posicion++;
-                        columna++;
-                    }
-                    
-                }
+                //Estado despues de encontrar @
+                estado = estadoAFD.ARROBA;
                 
-                if(!comentarioCerrado){
-                    estado = estadoAFD.ERROR;
-                    
-                    errorLexico error = new errorLexico("/*", "Comentario de Bloque sin cerrar", filaInicio, columnaInicio);
-                    listaErrores.add(error);
-                }
-                
-                estado = estadoAFD.INICIAL;
-            
-            
-            
-            //*************************DIRECTIVAS*************************
-            }else if (actual == '@') {
-                
-                estado = estadoAFD.DIRECTIVA;
-
-                int columnaInicio = columna;
-                //Construye el lexema carter por caracter
-                StringBuilder lexema = new StringBuilder();
                 lexema.append(actual);
-
+                
                 posicion++;
                 columna++;
-                //Se leen las letas que forman la directiva
+                
+                
+                //Se leen las letras que forman la directiva
                 while (posicion < entrada.length()
                         && Character.isLetter(entrada.charAt(posicion))) {
+                    
+                    estado = estadoAFD.DIRECTIVA;
 
                     lexema.append(entrada.charAt(posicion));
 
@@ -161,17 +227,20 @@ public class analizadorLexico {
                     columna++;
                 }
 
+                
                 String palabra = lexema.toString();
+                
                 //Verifica si la directiva pertenece al lenguaje
                 tipoToken tipo = identificarDirectiva(palabra);
 
+                
                 if (tipo != null) {
 
                     Token token = new Token(
                             numeroToken,
                             palabra,
                             tipo,
-                            fila,
+                            filaInicio,
                             columnaInicio
                     );
 
@@ -179,223 +248,290 @@ public class analizadorLexico {
                     numeroToken++;
 
                 } else {
+                    
+                    estado = estadoAFD.ERROR;
+                    
                     errorLexico error = new errorLexico(
                             palabra,
                             "Directiva no reconocida",
-                            fila,
+                            filaInicio,
                             columnaInicio
                     );
 
                     listaErrores.add(error);
                 }
                 
+                
                 estado = estadoAFD.INICIAL;
                 
                 
-                //**************CADENAS*****************
+                
+            //**************CADENAS*****************
             } else if(actual == '"' ){
                 
                 estado = estadoAFD.CADENA;
                 
                 int filaInicio = fila;
                 int columnaInicio = columna;
+                
                 StringBuilder lexema = new StringBuilder();
                 
                 lexema.append(actual);
                 
                 posicion++;
                 columna++;
+                
                 boolean cerrada = false;
                 
-                //Lee el la cadena hasta encontrar la comilla de cierre
-               while (posicion < entrada.length()){
-                   char caracter = entrada.charAt(posicion);
+                
+                //Lee la cadena hasta encontrar la comilla de cierre
+                while (posicion < entrada.length()){
+                    
+                    char caracter = entrada.charAt(posicion);
                    
-                   if (caracter == '"'){
-                       lexema.append(caracter);
+                    
+                    if (caracter == '"'){
+                        
+                        lexema.append(caracter);
                        
-                       posicion++;
-                       columna++;
-                       cerrada = true;
-                       break;
-                   }
-                   // Si hay salto de line, no es una cadena
-                   if(caracter == '\n'){
-                       break;
-                   }
-                   lexema.append(caracter);
-                   posicion++;
-                   columna++;
-            }
-               if (cerrada){
-                   Token token = new Token(numeroToken, lexema.toString(), tipoToken.CADENA
-                   , filaInicio,columnaInicio);
-                   listaTokens.add(token);
-                   numeroToken++;
-               }else{
-                   errorLexico error = new errorLexico(lexema.toString(), "Cadena sin cerrar",
-                   filaInicio, columnaInicio);
-                   listaErrores.add(error);
-               }
-               
-               estado = estadoAFD.INICIAL;
+                        posicion++;
+                        columna++;
+                        
+                        estado = estadoAFD.CADENA_ACEPTADA;
+                        
+                        cerrada = true;
+                        break;
+                    }
+                    
+                    
+                    //Si hay salto de linea, no es una cadena valida
+                    if(caracter == '\n'){
+                        
+                        break;
+                    }
+                    
+                    
+                    lexema.append(caracter);
+                    
+                    posicion++;
+                    columna++;
+                }
+                
+                
+                if (cerrada){
+                    
+                    Token token = new Token(
+                            numeroToken,
+                            lexema.toString(),
+                            tipoToken.CADENA,
+                            filaInicio,
+                            columnaInicio
+                    );
+                    
+                    listaTokens.add(token);
+                    numeroToken++;
+                    
+                    
+                }else{
+                    
+                    estado = estadoAFD.ERROR;
+                    
+                    errorLexico error = new errorLexico(
+                            lexema.toString(),
+                            "Cadena sin cerrar",
+                            filaInicio,
+                            columnaInicio
+                    );
+                    
+                    listaErrores.add(error);
+                }
+                
+                
+                estado = estadoAFD.INICIAL;
             
-            }
+            
             
             //****************NUMEROS******************
-            else if (Character.isDigit(actual)) {
+            }else if (Character.isDigit(actual)) {
                 
-            // Todo numero empieza como entero 
-            estado = estadoAFD.ENTERO;
-            int columnaInicio = columna;
+                //Todo numero empieza como entero
+                estado = estadoAFD.ENTERO;
+                
+                int filaInicio = fila;
+                int columnaInicio = columna;
 
-          StringBuilder lexema = new StringBuilder();
-         
-             boolean tienePunto = false;
-             boolean decimalValido = false;
-         
-             while (posicion < entrada.length()) {
-                char caracter = entrada.charAt(posicion);
+                StringBuilder lexema = new StringBuilder();
+                
+                
+                while (posicion < entrada.length()) {
+                    
+                    char caracter = entrada.charAt(posicion);
        
-
-             // Estado ENTERO
-             if (estado == estadoAFD.ENTERO) {
+                    
+                    //****************ESTADO ENTERO******************
+                    if (estado == estadoAFD.ENTERO) {
              
-              if (Character.isDigit(caracter)) {
-                    lexema.append(caracter);
+                        if (Character.isDigit(caracter)) {
+                            
+                            lexema.append(caracter);
                  
-                     posicion++;
-                    columna++;
+                            posicion++;
+                            columna++;
              
-                 } else if (caracter == '.') {
+                            
+                        } else if (caracter == '.') {
 
-                  // Se encontro el punto,
-                  // pero aun no sabemos si el decimal es valido
-                  estado = estadoAFD.PUNTO_DECIMAL;
-                  tienePunto = true;
+                            estado = estadoAFD.PUNTO_DECIMAL;
                
-                 lexema.append(caracter);
+                            lexema.append(caracter);
                
-                  posicion++;
-                 columna++;
+                            posicion++;
+                            columna++;
              
-                 } else {
-                     break;
-              }
+                        } else {
+                            
+                            break;
+                        }
               
-        // Estado PUNTO_DECIMAL
-             } else if (estado == estadoAFD.PUNTO_DECIMAL) {
+                        
+                    //****************ESTADO PUNTO DECIMAL******************
+                    } else if (estado == estadoAFD.PUNTO_DECIMAL) {
              
-              if (Character.isDigit(caracter)) {
+                        if (Character.isDigit(caracter)) {
 
-              // Ya existe al menos un numero despues del punto
-                 estado = estadoAFD.DECIMAL;
-                 decimalValido = true;
-                 lexema.append(caracter);
+                            estado = estadoAFD.DECIMAL;
+                            
+                            lexema.append(caracter);
              
-                 posicion++;
-                 columna++;
+                            posicion++;
+                            columna++;
              
-                 } else {
+                        } else {
 
-                // Si despues del punto no viene un numero,
-                // el decimal es incorrecto
-                break;
-            }
+                            break;
+                        }
 
-         // Estado DECIMAL
-             } else if (estado == estadoAFD.DECIMAL) {
+                        
+                    //****************ESTADO DECIMAL******************
+                    } else if (estado == estadoAFD.DECIMAL) {
             
-                   if (Character.isDigit(caracter)) {
-                   lexema.append(caracter);
-                   posicion++;
-                   columna++;
+                        if (Character.isDigit(caracter)) {
+                            
+                            lexema.append(caracter);
+                            
+                            posicion++;
+                            columna++;
              
-                 } else {
-                    break;
-              }   
-          }
-        }
-             String numero = lexema.toString();
-
-            // Si nunca aparecio punto, es entero
-            if (!tienePunto) {
-                Token token = new Token(
-                numeroToken,
-                numero,
-                tipoToken.ENTERO,
-                fila,
-                columnaInicio );
-
-                listaTokens.add(token);
-                numeroToken++;
-
-             // Si hubo punto y despues hubo digitos, es decimal
-            } else if (decimalValido) {
-
-                Token token = new Token(
-                numeroToken,
-                numero,
-                tipoToken.DECIMAL,
-                fila,
-                columnaInicio );
-
-                listaTokens.add(token);
-                 numeroToken++;
-
-                 // Si termino en PUNTO_DECIMAL, hay error
-              } else {
+                        } else {
+                            
+                            break;
+                        }   
+                    }
+                }
                 
-                errorLexico error = new errorLexico(numero,"Numero decimal invalido",fila,columnaInicio );
-                listaErrores.add(error);
-            }
-            estado = estadoAFD.INICIAL;
+                
+                String numero = lexema.toString();
+
+                
+                //Si termina en ENTERO
+                if (estado == estadoAFD.ENTERO) {
+                    
+                    Token token = new Token(
+                            numeroToken,
+                            numero,
+                            tipoToken.ENTERO,
+                            filaInicio,
+                            columnaInicio
+                    );
+
+                    listaTokens.add(token);
+                    numeroToken++;
+
+                    
+                //Si termina en DECIMAL
+                } else if (estado == estadoAFD.DECIMAL) {
+
+                    Token token = new Token(
+                            numeroToken,
+                            numero,
+                            tipoToken.DECIMAL,
+                            filaInicio,
+                            columnaInicio
+                    );
+
+                    listaTokens.add(token);
+                    numeroToken++;
+
+                    
+                //Si termina en PUNTO_DECIMAL hay error
+                } else if(estado == estadoAFD.PUNTO_DECIMAL) {
+                
+                    estado = estadoAFD.ERROR;
+                    
+                    errorLexico error = new errorLexico(
+                            numero,
+                            "Numero decimal invalido",
+                            filaInicio,
+                            columnaInicio
+                    );
+                    
+                    listaErrores.add(error);
+                }
+                
+                
+                estado = estadoAFD.INICIAL;
             
-            }
             
             
             // ***********IDENTIFICADORES Y PALABRAS RESERVADAS**************
-            else if (Character.isLetter(actual) || actual == '_') {
+            }else if (Character.isLetter(actual) || actual == '_') {
                 
                 estado = estadoAFD.IDENTIFICADOR;
 
-                // Guarda la columna donde comienza el token
+                //Guarda la fila y columna donde comienza el token
+                int filaInicio = fila;
                 int columnaInicio = columna;
 
                 StringBuilder lexema = new StringBuilder();
 
+                
                 while (posicion < entrada.length()
                         && (Character.isLetterOrDigit(entrada.charAt(posicion))
                         || entrada.charAt(posicion) == '_')) {
+                    
                     lexema.append(entrada.charAt(posicion));
 
                     posicion++;
                     columna++;
                 }
 
+                
                 String palabra = lexema.toString();
                 
-                // Reconoce el tipo de Token
+                //Reconoce el tipo de Token
                 tipoToken tipo = identificarPalabra(palabra);
 
+                
                 Token token = new Token(
                         numeroToken,
                         palabra,
                         tipo,
-                        fila,
+                        filaInicio,
                         columnaInicio
                 );
 
                 listaTokens.add(token);
                 numeroToken++;
                 
+                
                 estado = estadoAFD.INICIAL;
                 
                 
-                // **************CONECTOR -> ************************
+                
+            // **************CONECTOR -> ************************
             }else if (actual == '-' ){
                 
-                estado = estadoAFD.CONECTOR;
+                estado = estadoAFD.GUION;
                 
                 int filaInicio = fila;
                 int columnaInicio = columna;
@@ -403,52 +539,93 @@ public class analizadorLexico {
                 posicion++;
                 columna++;
                 
+                
                 if(posicion < entrada.length() && entrada.charAt(posicion) == '>'){
+                    
                     estado = estadoAFD.CONECTOR;
                     
-                    Token token = new Token(numeroToken, "->", tipoToken.CONECTOR, filaInicio, columnaInicio);
+                    Token token = new Token(
+                            numeroToken,
+                            "->",
+                            tipoToken.CONECTOR,
+                            filaInicio,
+                            columnaInicio
+                    );
+                    
                     listaTokens.add(token);
                     numeroToken++;
+                    
                     posicion++;
                     columna++;
                     
+                    
                 }else{
+                    
                     estado = estadoAFD.ERROR;
                     
-                    errorLexico error = new errorLexico("-", "Conector Incompleto", filaInicio, columnaInicio);
+                    errorLexico error = new errorLexico(
+                            "-",
+                            "Conector Incompleto",
+                            filaInicio,
+                            columnaInicio
+                    );
+                    
                     listaErrores.add(error);
                 }
+                
+                
                 estado = estadoAFD.INICIAL;
                
-            // ******************OPERADORES***********************    
-            }else if(actual == '='  ||  actual == '+'){
+                
+                
+            // ******************OPERADORES***********************
+            }else if(actual == '=' || actual == '+'){
                 
                 estado = estadoAFD.OPERADOR;
                 
                 int columnaInicio = columna;
-                Token token = new Token(numeroToken, String.valueOf(actual), tipoToken.OPERADOR,
-                fila, columnaInicio);
+                
+                Token token = new Token(
+                        numeroToken,
+                        String.valueOf(actual),
+                        tipoToken.OPERADOR,
+                        fila,
+                        columnaInicio
+                );
                 
                 listaTokens.add(token);
                 numeroToken++;
+                
                 posicion++;
                 columna++;
+                
                 
                 estado = estadoAFD.INICIAL;
         
                     
-            //*********************DELIMITADORES************************        
-            }else if(actual == '{'|| actual == '}'|| actual == '('|| actual == ')'|| actual == ',' || actual == ';'){
+                    
+            //*********************DELIMITADORES************************
+            }else if(actual == '{' || actual == '}' || actual == '('
+                    || actual == ')' || actual == ',' || actual == ';'){
                 
                 estado = estadoAFD.DELIMITADOR;
+                
                 int columnaInicio = columna;
-                Token token = new Token(numeroToken, String.valueOf(actual), tipoToken.DELIMITADOR
-                , fila, columnaInicio);
+                
+                Token token = new Token(
+                        numeroToken,
+                        String.valueOf(actual),
+                        tipoToken.DELIMITADOR,
+                        fila,
+                        columnaInicio
+                );
             
                 listaTokens.add(token);
                 numeroToken++;
+                
                 posicion++;
                 columna++;
+                
                 
                 estado = estadoAFD.INICIAL;
             
@@ -468,15 +645,22 @@ public class analizadorLexico {
 
                 listaErrores.add(error);
 
+                
+                //Se descarta solamente el caracter incorrecto
+                //y el analizador continua
                 posicion++;
                 columna++;
+                
                 
                 estado = estadoAFD.INICIAL;
             }
         }
     }
     
-    // Se comprueba si el lexema es una directiva valida
+    
+    
+    //*******************IDENTIFICAR DIRECTIVAS*********************
+    //Se comprueba si el lexema es una directiva valida
     private tipoToken identificarDirectiva(String lexema) {
 
         if (lexema.equals("@modelo")
@@ -489,19 +673,22 @@ public class analizadorLexico {
         return null;
     }
     
+    
    
+    //*******************IDENTIFICAR PALABRAS*********************
     private tipoToken identificarPalabra(String lexema) {
+        
         
         // PALABRAS RESERVADAS
         if (lexema.equals("AGENTE")
                 || lexema.equals("contexto")
                 || lexema.equals("variable")
                 || lexema.equals("EJECUTAR")
-                || lexema.equals("EXPORTAR")
-                || lexema.equals("CODIFICAR")) {
+                || lexema.equals("EXPORTAR")) {
 
             return tipoToken.PALABRA_RESERVADA;
         }
+        
         
         //COMANDOS DE IA
         if (lexema.equals("PREGUNTAR")
@@ -515,6 +702,7 @@ public class analizadorLexico {
             return tipoToken.COMANDO_IA;
         }
         
+        
         //CONECTORES
         if (lexema.equals("SOBRE")
                 || lexema.equals("DESDE")
@@ -524,22 +712,29 @@ public class analizadorLexico {
             return tipoToken.CONECTOR;
         }
         
-        //COMANDO DE IA
+        
+        //FUNCION DEL SISTEMA
         if (lexema.equals("CARGAR")) {
 
             return tipoToken.FUNCION;
         }
+        
         
         //En caso de no reconocer los anteriores, es un identificador
         return tipoToken.IDENTIFICADOR;
     }
 
     
+    
     public ArrayList<Token> getlistaTokens() {
+        
         return listaTokens;
     }
 
+    
+    
     public ArrayList<errorLexico> getlistaErrores() {
+        
         return listaErrores;
     }
 }

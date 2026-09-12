@@ -11,6 +11,7 @@ import promptZal.Token;
 import promptZal.analizadorLexico;
 import promptZal.errorLexico;
 import promptZal.reporteHTML;
+import promptZal.GraphvizAFD;
 
 /**
  *
@@ -88,6 +89,12 @@ public class Pactica1JI_PromptZal {
         
         reporte.generarReporteTokens(analizador.getlistaTokens());
         reporte.generarReporteErrores(analizador.getlistaErrores());
+        
+        //Generar archivo DOT e imagen del AFD
+        GraphvizAFD graphviz = new GraphvizAFD();
+        graphviz.generarAFD();
+        
+        
         scanner.close();
     }
 }
