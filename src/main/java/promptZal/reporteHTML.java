@@ -116,7 +116,7 @@ public class reporteHTML {
 
                 archivo.write("<tr>\n");
                 archivo.write("<th>LEXEMA</th>\n");
-                archivo.write("<th>TIPO DE ERRORR</th>\n");
+                archivo.write("<th>TIPO DE ERROR</th>\\n");
                 archivo.write("<th>FILA</th>\n");
                 archivo.write("<th>COLUMNA</th>\n");
                 archivo.write("</tr>\n");
@@ -133,7 +133,7 @@ public class reporteHTML {
                     archivo.write("<td>"+error.getColumna()+"</td>\n");
                     archivo.write("</tr>\n");
                 }
-                archivo.write("<table>\n");
+                archivo.write("</table>\n");
             
             }
             archivo.write("</body>\n");
@@ -152,6 +152,135 @@ public class reporteHTML {
         
     
     }
+    
+    //*******************REPORTE DE ESTADISTICAS*************************
+    public void generarReporteEstadisticas(ArrayList<Token> listaTokens,
+        ArrayList<errorLexico> listaErrores, String texto){
+        try{
+            FileWriter archivo = new FileWriter("reporteEstadisticas.html");
+            archivo.write("<!DOCTYPE html>\n");
+            archivo.write("<html>\n");
+            archivo.write("<head>\n");
+            archivo.write("<meta charset=\"UTF-8\">\n");
+            archivo.write("<title>REPORTE DE ESTADISTICAS</title>\n");
+        
+        
+            //Estilos del reporte
+            archivo.write("<style>\n");
+            archivo.write("body { font-family: Arial; margin: 40px; background-color: #C9C9C9 }\n");
+            archivo.write("h1 { text-align: center; }\n");
+            archivo.write("h2 { margin-top: 35px; }\n");
+            archivo.write("table { border-collapse: collapse; width: 100%; }\n");
+            archivo.write("th, td { border: 3px solid #333; padding: 8px; text-align: center; }\n");
+            archivo.write("th { background-color: black; color: white; font-weight: bold; }\n");
+            archivo.write("</style>\n");
+        
+        
+            archivo.write("</head>\n");
+            archivo.write("<body>\n");
+            archivo.write("<h1>REPORTE DE ESTADISTICAS</h1>\n");
+        
+        
+            //*******************DATOS GENERALES********************
+            int totalTokens = listaTokens.size();
+            int totalErrores = listaErrores.size();
+            int totalLineas = contarLineas(texto);
+        
+        
+            archivo.write("<h2>DATOS GENERALES</h2>\n");
+        
+            archivo.write("<table>\n");
+            archivo.write("<tr>\n");
+            archivo.write("<th>DESCRIPCION</th>\n");
+            archivo.write("<th>TOTAL</th>\n");
+            archivo.write("</tr>\n");
+        
+        
+            archivo.write("<tr>\n");
+            archivo.write("<td>Total de Tokens</td>\n");
+            archivo.write("<td>"+totalTokens+"</td>\n");
+            archivo.write("</tr>\n");
+        
+        
+            archivo.write("<tr>\n");
+            archivo.write("<td>Total de Lineas</td>\n");
+            archivo.write("<td>"+totalLineas+"</td>\n");
+            archivo.write("</tr>\n");
+        
+        
+            archivo.write("<tr>\n");
+            archivo.write("<td>Total de Errores</td>\n");
+            archivo.write("<td>"+totalErrores+"</td>\n");
+            archivo.write("</tr>\n");
+            archivo.write("</table>\n");
+        
+        
+            //*******************FRECUENCIA DE TOKENS********************
+            archivo.write("<h2>FRECUENCIA DE TOKENS</h2>\n");
+        
+            archivo.write("<table>\n");
+            archivo.write("<tr>\n");
+            archivo.write("<th>TIPO DE TOKEN</th>\n");
+            archivo.write("<th>FRECUENCIA</th>\n");
+            archivo.write("</tr>\n");
+        
+        
+            //Recorre todos los tipos de Token
+                for(tipoToken tipo : tipoToken.values()){
+                    int contador = 0;
+
+            //Cuenta cuantos Tokens existen de ese tipo
+                for(Token token : listaTokens){
+                
+                    if(token.getTipo() == tipo){
+                    
+                        contador++;
+                }
+            }
+            
+            
+            String color = colorTokens(tipo);
+            
+            
+                archivo.write("<tr>\n");
+                archivo.write("<td style=\"background-color: "+color+"; font-weight: bold;\">"+tipo+"</td>\n");
+                archivo.write("<td>"+contador+"</td>\n");
+                archivo.write("</tr>\n");
+        }
+       
+            archivo.write("</table>\n");
+            archivo.write("</body>\n");
+            archivo.write("</html>\n");
+            archivo.close();
+        
+            System.out.println("Reporte de Estadisticas generado con exito");
+        
+        }catch(IOException e){
+            System.out.println("Error al generar el reporte de Estadisticas");
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    
+    
+    private int contarLineas(String texto){
+        
+        if(texto.isEmpty()){
+            return 0;
+        }
+        
+        int totalLineas = 1;
+        for(int i = 0; i < texto.length(); i++){
+            
+            if(texto.charAt(i) == '\n' && i < texto.length()-1){
+                
+                totalLineas++;
+            }
+        }
+        return totalLineas;
+    }
+    
+    
     
     private String colorTokens(tipoToken tipo) {
 

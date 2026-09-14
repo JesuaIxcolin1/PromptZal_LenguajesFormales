@@ -89,6 +89,7 @@ public class Pactica1JI_PromptZal {
         
         reporte.generarReporteTokens(analizador.getlistaTokens());
         reporte.generarReporteErrores(analizador.getlistaErrores());
+        reporte.generarReporteEstadisticas(analizador.getlistaTokens(), analizador.getlistaErrores(), texto);
         
         //Generar archivo DOT e imagen del AFD
         GraphvizAFD graphviz = new GraphvizAFD();
