@@ -6,6 +6,7 @@ package promptZal;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 
@@ -39,6 +40,19 @@ public class Archivo {
         }
         // Se devuelve todo el contenido del archivo en String
         return contenido.toString();
+    
+    }
+    
+    public void guardarArchivo(String ruta, String contenido){
+        try{
+            FileWriter escritor = new FileWriter(ruta);
+            escritor.write(contenido);
+            escritor.close();
+        }catch(IOException e ){
+            
+            System.out.println("Error al guardar el Archivo");
+            System.out.println(e.getMessage());
+        }
     
     }
     
