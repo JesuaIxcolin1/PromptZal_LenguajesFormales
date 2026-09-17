@@ -4,85 +4,164 @@
 <meta charset="UTF-8">
 <title>REPORTE DE ESTADISTICAS</title>
 <style>
-body { font-family: Arial; margin: 40px; background-color: #C9C9C9 }
-h1 { text-align: center; }
-h2 { margin-top: 35px; }
-table { border-collapse: collapse; width: 100%; }
-th, td { border: 3px solid #333; padding: 8px; text-align: center; }
-th { background-color: black; color: white; font-weight: bold; }
+body { font-family: Arial, sans-serif; margin: 0; background: #F5F1E8; color: #1F1F1F; }
+.encabezado { background: linear-gradient(90deg, #007A5E, #3FAF8F); color: white; padding: 25px; text-align: center; }
+.encabezado h1 { margin: 0; font-size: 34px; }
+.encabezado p { margin: 8px 0 0 0; font-size: 15px; }
+.contenedor { width: 90%; margin: 30px auto; }
+.card { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); margin-bottom: 25px; }
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th { background: #007A5E; color: white; padding: 12px; font-size: 14px; }
+td { border-bottom: 1px solid #DDD; padding: 10px; text-align: center; font-size: 14px; }
+tr:nth-child(even) { background: #F8F8F8; }
+.mensaje { font-size: 22px; font-weight: bold; color: #007A5E; text-align: center; padding: 30px; }
 </style>
 </head>
 <body>
+<div class="encabezado">
 <h1>REPORTE DE ESTADISTICAS</h1>
-<h2>DATOS GENERALES</h2>
-<table>
-<tr>
-<th>DESCRIPCION</th>
-<th>TOTAL</th>
-</tr>
-<tr>
-<td>Total de Tokens</td>
-<td>25</td>
-</tr>
-<tr>
-<td>Total de Lineas</td>
-<td>16</td>
-</tr>
-<tr>
-<td>Total de Errores</td>
-<td>3</td>
-</tr>
-</table>
-<h2>FRECUENCIA DE TOKENS</h2>
+<p>PromptZal</p>
+</div>
+<div class="contenedor">
+<div class="card">
+<h2>Resumen General</h2>
+<div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:20px;">
+<div style="flex:1; min-width:220px; background:#007A5E; color:white; padding:20px; border-radius:14px; text-align:center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+<div style="font-size:18px; font-weight:bold;">Total de Tokens</div>
+<div style="font-size:32px; margin-top:10px; font-weight:bold;">25</div>
+</div>
+<div style="flex:1; min-width:220px; background:#3FAF8F; color:white; padding:20px; border-radius:14px; text-align:center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+<div style="font-size:18px; font-weight:bold;">Total de Lineas</div>
+<div style="font-size:32px; margin-top:10px; font-weight:bold;">16</div>
+</div>
+<div style="flex:1; min-width:220px; background:#C62828; color:white; padding:20px; border-radius:14px; text-align:center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+<div style="font-size:18px; font-weight:bold;">Total de Errores</div>
+<div style="font-size:32px; margin-top:10px; font-weight:bold;">3</div>
+</div>
+</div>
+</div>
+<div class="card">
+<h2>Frecuencia de Tokens</h2>
 <table>
 <tr>
 <th>TIPO DE TOKEN</th>
 <th>FRECUENCIA</th>
 </tr>
 <tr>
-<td style="background-color: #C29E4A; font-weight: bold;">DIRECTIVA</td>
+<td style="background-color:#D4AF37; color:white; font-weight:bold;">DIRECTIVA</td>
 <td>1</td>
 </tr>
 <tr>
-<td style="background-color: #85513C; font-weight: bold;">PALABRA_RESERVADA</td>
+<td style="background-color:#8D5A3B; color:white; font-weight:bold;">PALABRA_RESERVADA</td>
 <td>6</td>
 </tr>
 <tr>
-<td style="background-color: #224D3A; font-weight: bold;">COMANDO_IA</td>
+<td style="background-color:#1F6F50; color:white; font-weight:bold;">COMANDO_IA</td>
 <td>0</td>
 </tr>
 <tr>
-<td style="background-color: #FFB74D; font-weight: bold;">CONECTOR</td>
+<td style="background-color:#F4B04F; color:white; font-weight:bold;">CONECTOR</td>
 <td>0</td>
 </tr>
 <tr>
-<td style="background-color: #468C7D; font-weight: bold;">IDENTIFICADOR</td>
+<td style="background-color:#4F9D8A; color:white; font-weight:bold;">IDENTIFICADOR</td>
 <td>7</td>
 </tr>
 <tr>
-<td style="background-color: #2A376E; font-weight: bold;">CADENA</td>
+<td style="background-color:#30499B; color:white; font-weight:bold;">CADENA</td>
 <td>4</td>
 </tr>
 <tr>
-<td style="background-color: #FFF176; font-weight: bold;">OPERADOR</td>
+<td style="background-color:#E7D85B; color:white; font-weight:bold;">OPERADOR</td>
 <td>3</td>
 </tr>
 <tr>
-<td style="background-color: #46748C; font-weight: bold;">FUNCION</td>
+<td style="background-color:#467599; color:white; font-weight:bold;">FUNCION</td>
 <td>0</td>
 </tr>
 <tr>
-<td style="background-color: #998440; font-weight: bold;">ENTERO</td>
+<td style="background-color:#B09540; color:white; font-weight:bold;">ENTERO</td>
 <td>2</td>
 </tr>
 <tr>
-<td style="background-color: #287A77; font-weight: bold;">DECIMAL</td>
+<td style="background-color:#2E8B8B; color:white; font-weight:bold;">DECIMAL</td>
 <td>0</td>
 </tr>
 <tr>
-<td style="background-color: #81D4FA; font-weight: bold;">DELIMITADOR</td>
+<td style="background-color:#74B9E2; color:white; font-weight:bold;">DELIMITADOR</td>
 <td>2</td>
 </tr>
 </table>
+</div>
+<div class="card">
+<h2>Tendencias - Grafica de Barras</h2>
+<div style="margin-bottom:18px;">
+<div style="font-weight:bold; margin-bottom:5px;">DIRECTIVA (1)</div>
+<div style="background:#DDD; border-radius:10px; overflow:hidden;">
+<div style="width:71px; background:#D4AF37; color:white; padding:10px; font-weight:bold; border-radius:10px;">1</div>
+</div>
+</div>
+<div style="margin-bottom:18px;">
+<div style="font-weight:bold; margin-bottom:5px;">PALABRA_RESERVADA (6)</div>
+<div style="background:#DDD; border-radius:10px; overflow:hidden;">
+<div style="width:428px; background:#8D5A3B; color:white; padding:10px; font-weight:bold; border-radius:10px;">6</div>
+</div>
+</div>
+<div style="margin-bottom:18px;">
+<div style="font-weight:bold; margin-bottom:5px;">COMANDO_IA (0)</div>
+<div style="background:#DDD; border-radius:10px; overflow:hidden;">
+<div style="width:0px; background:#1F6F50; color:white; padding:10px; font-weight:bold; border-radius:10px;">0</div>
+</div>
+</div>
+<div style="margin-bottom:18px;">
+<div style="font-weight:bold; margin-bottom:5px;">CONECTOR (0)</div>
+<div style="background:#DDD; border-radius:10px; overflow:hidden;">
+<div style="width:0px; background:#F4B04F; color:white; padding:10px; font-weight:bold; border-radius:10px;">0</div>
+</div>
+</div>
+<div style="margin-bottom:18px;">
+<div style="font-weight:bold; margin-bottom:5px;">IDENTIFICADOR (7)</div>
+<div style="background:#DDD; border-radius:10px; overflow:hidden;">
+<div style="width:500px; background:#4F9D8A; color:white; padding:10px; font-weight:bold; border-radius:10px;">7</div>
+</div>
+</div>
+<div style="margin-bottom:18px;">
+<div style="font-weight:bold; margin-bottom:5px;">CADENA (4)</div>
+<div style="background:#DDD; border-radius:10px; overflow:hidden;">
+<div style="width:285px; background:#30499B; color:white; padding:10px; font-weight:bold; border-radius:10px;">4</div>
+</div>
+</div>
+<div style="margin-bottom:18px;">
+<div style="font-weight:bold; margin-bottom:5px;">OPERADOR (3)</div>
+<div style="background:#DDD; border-radius:10px; overflow:hidden;">
+<div style="width:214px; background:#E7D85B; color:white; padding:10px; font-weight:bold; border-radius:10px;">3</div>
+</div>
+</div>
+<div style="margin-bottom:18px;">
+<div style="font-weight:bold; margin-bottom:5px;">FUNCION (0)</div>
+<div style="background:#DDD; border-radius:10px; overflow:hidden;">
+<div style="width:0px; background:#467599; color:white; padding:10px; font-weight:bold; border-radius:10px;">0</div>
+</div>
+</div>
+<div style="margin-bottom:18px;">
+<div style="font-weight:bold; margin-bottom:5px;">ENTERO (2)</div>
+<div style="background:#DDD; border-radius:10px; overflow:hidden;">
+<div style="width:142px; background:#B09540; color:white; padding:10px; font-weight:bold; border-radius:10px;">2</div>
+</div>
+</div>
+<div style="margin-bottom:18px;">
+<div style="font-weight:bold; margin-bottom:5px;">DECIMAL (0)</div>
+<div style="background:#DDD; border-radius:10px; overflow:hidden;">
+<div style="width:0px; background:#2E8B8B; color:white; padding:10px; font-weight:bold; border-radius:10px;">0</div>
+</div>
+</div>
+<div style="margin-bottom:18px;">
+<div style="font-weight:bold; margin-bottom:5px;">DELIMITADOR (2)</div>
+<div style="background:#DDD; border-radius:10px; overflow:hidden;">
+<div style="width:142px; background:#74B9E2; color:white; padding:10px; font-weight:bold; border-radius:10px;">2</div>
+</div>
+</div>
+</div>
+</div>
 </body>
 </html>

@@ -1,6 +1,10 @@
 digraph AFD {
 rankdir=LR;
 
+graph [bgcolor="#F7F4EA", pad="0.4", nodesep="0.7", ranksep="1.2", dpi=180];
+node [fontname="Arial", fontsize=12, style=filled, fillcolor="#F1F8F5", color="#007A5E"];
+edge [fontname="Arial", fontsize=10, color="#444444"];
+
 inicio [shape=point];
 inicio -> INICIAL;
 

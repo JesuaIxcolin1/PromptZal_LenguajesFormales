@@ -11,6 +11,10 @@ import javax.swing.JOptionPane;
 import java.io.IOException;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.BorderFactory;
+import javax.swing.table.JTableHeader;
 
 /**
  *
@@ -29,6 +33,8 @@ public class VentanaPrincipall extends javax.swing.JFrame {
         
         setLocationRelativeTo(null);
         setTitle("PromptZal - Analizador Lexico");
+        
+        aplicarEstilo();
     }
 
     /**
@@ -125,7 +131,7 @@ public class VentanaPrincipall extends javax.swing.JFrame {
                 {null, null, null, null, null}
             },
             new String [] {
-                "Numero", "Lexema", "Tipo", "FIla", "Columna"
+                "Numero", "Lexema", "Tipo", "Fila", "Columna"
             }
         ));
         jScrollPane2.setViewportView(tablaTokens);
@@ -211,7 +217,7 @@ public class VentanaPrincipall extends javax.swing.JFrame {
     private void btnAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAbrirActionPerformed
         //**************Abrir Archivo***********************
         JFileChooser seleccionarArchivo = new JFileChooser();
-        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos PromptZal (*.pz)", " pz");
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos PromptZal (*.pz)", "pz");
         
         seleccionarArchivo.setFileFilter(filtro);
         int opcion = seleccionarArchivo.showOpenDialog(this);
@@ -365,13 +371,13 @@ public class VentanaPrincipall extends javax.swing.JFrame {
                 Desktop.getDesktop().open(imagenAFD);
                 
             }else{
-                JOptionPane.showMessageDialog(this, "No se pudo encontrar la imgen del AFD", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No se pudo encontrar la imagen del AFD", "Error", JOptionPane.ERROR_MESSAGE);
                 
             }
         }catch(IOException e){
         
         
-            JOptionPane.showMessageDialog(this, "No se pudo abrir la imgaen AFD", "Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No se pudo abrir la imagen AFD", "Error",JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAFDActionPerformed
 
@@ -434,6 +440,59 @@ public class VentanaPrincipall extends javax.swing.JFrame {
         modelo.addRow(fila);
     }
 }
+    
+    //****************Aplicar estilo a la interfaz***********************
+    private void aplicarEstilo(){
+        Color verdeQuetzal = new Color(0, 122, 94);
+        Color verdeClaro = new Color(63,175,143);
+        Color rojo = new Color(198, 40, 40);
+        Color dorado = new Color(212, 175, 55);
+        Color fondo = new Color(245, 241, 232);
+        Color blanco = Color.WHITE;
+        Color texto = new Color(31, 31, 31);
+        
+        getContentPane().setBackground(fondo);
+        
+        txtEditor.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        txtEditor.setBackground(blanco);
+        txtEditor.setForeground(texto);
+        txtEditor.setBorder(BorderFactory.createLineBorder(verdeQuetzal, 2));
+        
+        estiloBotones(btnAbrir, verdeQuetzal);
+        estiloBotones(btnGuardar, verdeQuetzal);
+        estiloBotones(btnAnalizar, dorado);
+        estiloBotones(btnReporteTokens, verdeClaro);
+        estiloBotones(btnReporteErrores, rojo);
+        estiloBotones(btnReporteEstadisticas, verdeClaro);
+        estiloBotones(btnAFD, verdeQuetzal);
+        
+        estiloTablas(tablaTokens);
+        estiloTablas(tablaErrores);
+        
+    }
+    
+    
+    //*****************Estilo de botones**************
+    private void estiloBotones(javax.swing.JButton boton, Color colorFondo){
+        
+        boton.setBackground(colorFondo);
+        boton.setForeground(Color.WHITE);
+        boton.setFocusPainted(false);
+        boton.setBorder(BorderFactory.createLineBorder(colorFondo.darker(),2));
+        boton.setFont(new Font("Arial", Font.BOLD,12));
+    
+    }
+    
+    //******************Estilo de las Tablas*****************
+    private void estiloTablas(javax.swing.JTable tabla){
+        tabla.setRowHeight(24);
+        tabla.setFont(new Font("Arial", Font.PLAIN,12));
+        tabla.setGridColor(new Color(180,180,180));
+        tabla.setSelectionBackground(new Color(63,175,143));
+        tabla.setSelectionForeground(Color.WHITE);
+    
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAFD;

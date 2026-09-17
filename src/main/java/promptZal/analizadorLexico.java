@@ -319,15 +319,14 @@ public class analizadorLexico {
                 
                 
                 if (cerrada){
-                    
-                    Token token = new Token(
-                            numeroToken,
-                            lexema.toString(),
-                            tipoToken.CADENA,
-                            filaInicio,
-                            columnaInicio
-                    );
-                    
+                    String contenidoCadena = lexema.toString();
+
+                    if(contenidoCadena.length() >= 2){
+
+                        contenidoCadena = contenidoCadena.substring(1, contenidoCadena.length() - 1);
+                    }
+
+                    Token token = new Token(numeroToken,contenidoCadena,tipoToken.CADENA,filaInicio,columnaInicio);
                     listaTokens.add(token);
                     numeroToken++;
                     

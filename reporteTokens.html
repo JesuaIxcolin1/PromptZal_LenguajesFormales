@@ -1,19 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset = "UTF-8">
+<meta charset="UTF-8">
 <title>REPORTE DE TOKENS</title>
 <style>
-body { font-family: Arial; margin: 40px; background-color: #C9C9C9 }
-h1 { text-align: center; }
-table { border-collapse: collapse; width: 100%; }
-th, td { border: 3px solid #333; padding: 8px; text-align: center; }
-th { background-color: black; color: white; font-weight: bold; }
+body { font-family: Arial, sans-serif; margin: 0; background: #F5F1E8; color: #1F1F1F; }
+.encabezado { background: linear-gradient(90deg, #007A5E, #3FAF8F); color: white; padding: 25px; text-align: center; }
+.encabezado h1 { margin: 0; font-size: 34px; }
+.encabezado p { margin: 8px 0 0 0; font-size: 15px; }
+.contenedor { width: 90%; margin: 30px auto; }
+.card { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); margin-bottom: 25px; }
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th { background: #007A5E; color: white; padding: 12px; font-size: 14px; }
+td { border-bottom: 1px solid #DDD; padding: 10px; text-align: center; font-size: 14px; }
+tr:nth-child(even) { background: #F8F8F8; }
+.mensaje { font-size: 22px; font-weight: bold; color: #007A5E; text-align: center; padding: 30px; }
 </style>
 </head>
 <body>
+<div class="encabezado">
 <h1>REPORTE DE TOKENS</h1>
+<p>PromptZal</p>
+</div>
+<div class="contenedor">
+<div class="card">
+<h2>Listado de Tokens Reconocidos</h2>
 <table>
+<tr>
 <th>Numero</th>
 <th>Lexema</th>
 <th>Tipo</th>
@@ -23,178 +36,180 @@ th { background-color: black; color: white; font-weight: bold; }
 <tr>
 <td>1</td>
 <td>@modelo</td>
-<td style="background-color: #C29E4A; font-weight: bold;">DIRECTIVA</td>
+<td style="background-color:#D4AF37; color:white; font-weight:bold;">DIRECTIVA</td>
 <td>1</td>
 <td>1</td>
 </tr>
 <tr>
 <td>2</td>
-<td>"claude-sonnet-4-6"</td>
-<td style="background-color: #2A376E; font-weight: bold;">CADENA</td>
+<td>claude-sonnet-4-6</td>
+<td style="background-color:#30499B; color:white; font-weight:bold;">CADENA</td>
 <td>1</td>
 <td>9</td>
 </tr>
 <tr>
 <td>3</td>
 <td>AGENTE</td>
-<td style="background-color: #85513C; font-weight: bold;">PALABRA_RESERVADA</td>
+<td style="background-color:#8D5A3B; color:white; font-weight:bold;">PALABRA_RESERVADA</td>
 <td>3</td>
 <td>1</td>
 </tr>
 <tr>
 <td>4</td>
 <td>prueba</td>
-<td style="background-color: #468C7D; font-weight: bold;">IDENTIFICADOR</td>
+<td style="background-color:#4F9D8A; color:white; font-weight:bold;">IDENTIFICADOR</td>
 <td>3</td>
 <td>8</td>
 </tr>
 <tr>
 <td>5</td>
 <td>{</td>
-<td style="background-color: #81D4FA; font-weight: bold;">DELIMITADOR</td>
+<td style="background-color:#74B9E2; color:white; font-weight:bold;">DELIMITADOR</td>
 <td>3</td>
 <td>15</td>
 </tr>
 <tr>
 <td>6</td>
 <td>variable</td>
-<td style="background-color: #85513C; font-weight: bold;">PALABRA_RESERVADA</td>
+<td style="background-color:#8D5A3B; color:white; font-weight:bold;">PALABRA_RESERVADA</td>
 <td>4</td>
 <td>1</td>
 </tr>
 <tr>
 <td>7</td>
 <td>texto</td>
-<td style="background-color: #468C7D; font-weight: bold;">IDENTIFICADOR</td>
+<td style="background-color:#4F9D8A; color:white; font-weight:bold;">IDENTIFICADOR</td>
 <td>4</td>
 <td>10</td>
 </tr>
 <tr>
 <td>8</td>
 <td>=</td>
-<td style="background-color: #FFF176; font-weight: bold;">OPERADOR</td>
+<td style="background-color:#E7D85B; color:white; font-weight:bold;">OPERADOR</td>
 <td>4</td>
 <td>16</td>
 </tr>
 <tr>
 <td>9</td>
-<td>"Hola mundo"</td>
-<td style="background-color: #2A376E; font-weight: bold;">CADENA</td>
+<td>Hola mundo</td>
+<td style="background-color:#30499B; color:white; font-weight:bold;">CADENA</td>
 <td>4</td>
 <td>18</td>
 </tr>
 <tr>
 <td>10</td>
 <td>variable</td>
-<td style="background-color: #85513C; font-weight: bold;">PALABRA_RESERVADA</td>
+<td style="background-color:#8D5A3B; color:white; font-weight:bold;">PALABRA_RESERVADA</td>
 <td>5</td>
 <td>1</td>
 </tr>
 <tr>
 <td>11</td>
 <td>numero</td>
-<td style="background-color: #468C7D; font-weight: bold;">IDENTIFICADOR</td>
+<td style="background-color:#4F9D8A; color:white; font-weight:bold;">IDENTIFICADOR</td>
 <td>5</td>
 <td>10</td>
 </tr>
 <tr>
 <td>12</td>
 <td>=</td>
-<td style="background-color: #FFF176; font-weight: bold;">OPERADOR</td>
+<td style="background-color:#E7D85B; color:white; font-weight:bold;">OPERADOR</td>
 <td>5</td>
 <td>17</td>
 </tr>
 <tr>
 <td>13</td>
 <td>25</td>
-<td style="background-color: #998440; font-weight: bold;">ENTERO</td>
+<td style="background-color:#B09540; color:white; font-weight:bold;">ENTERO</td>
 <td>5</td>
 <td>19</td>
 </tr>
 <tr>
 <td>14</td>
-<td>"Hola mundo"</td>
-<td style="background-color: #2A376E; font-weight: bold;">CADENA</td>
+<td>Hola mundo</td>
+<td style="background-color:#30499B; color:white; font-weight:bold;">CADENA</td>
 <td>6</td>
 <td>1</td>
 </tr>
 <tr>
 <td>15</td>
 <td>Var</td>
-<td style="background-color: #468C7D; font-weight: bold;">IDENTIFICADOR</td>
+<td style="background-color:#4F9D8A; color:white; font-weight:bold;">IDENTIFICADOR</td>
 <td>8</td>
 <td>1</td>
 </tr>
 <tr>
 <td>16</td>
-<td>"Esta cadena no se cierra"</td>
-<td style="background-color: #2A376E; font-weight: bold;">CADENA</td>
+<td>Esta cadena no se cierra</td>
+<td style="background-color:#30499B; color:white; font-weight:bold;">CADENA</td>
 <td>9</td>
 <td>1</td>
 </tr>
 <tr>
 <td>17</td>
 <td>variable</td>
-<td style="background-color: #85513C; font-weight: bold;">PALABRA_RESERVADA</td>
+<td style="background-color:#8D5A3B; color:white; font-weight:bold;">PALABRA_RESERVADA</td>
 <td>10</td>
 <td>1</td>
 </tr>
 <tr>
 <td>18</td>
 <td>resultado</td>
-<td style="background-color: #468C7D; font-weight: bold;">IDENTIFICADOR</td>
+<td style="background-color:#4F9D8A; color:white; font-weight:bold;">IDENTIFICADOR</td>
 <td>10</td>
 <td>10</td>
 </tr>
 <tr>
 <td>19</td>
 <td>=</td>
-<td style="background-color: #FFF176; font-weight: bold;">OPERADOR</td>
+<td style="background-color:#E7D85B; color:white; font-weight:bold;">OPERADOR</td>
 <td>10</td>
 <td>20</td>
 </tr>
 <tr>
 <td>20</td>
 <td>100</td>
-<td style="background-color: #998440; font-weight: bold;">ENTERO</td>
+<td style="background-color:#B09540; color:white; font-weight:bold;">ENTERO</td>
 <td>10</td>
 <td>22</td>
 </tr>
 <tr>
 <td>21</td>
 <td>}</td>
-<td style="background-color: #81D4FA; font-weight: bold;">DELIMITADOR</td>
+<td style="background-color:#74B9E2; color:white; font-weight:bold;">DELIMITADOR</td>
 <td>13</td>
 <td>1</td>
 </tr>
 <tr>
 <td>22</td>
 <td>EJECUTAR</td>
-<td style="background-color: #85513C; font-weight: bold;">PALABRA_RESERVADA</td>
+<td style="background-color:#8D5A3B; color:white; font-weight:bold;">PALABRA_RESERVADA</td>
 <td>15</td>
 <td>1</td>
 </tr>
 <tr>
 <td>23</td>
 <td>prueba</td>
-<td style="background-color: #468C7D; font-weight: bold;">IDENTIFICADOR</td>
+<td style="background-color:#4F9D8A; color:white; font-weight:bold;">IDENTIFICADOR</td>
 <td>15</td>
 <td>10</td>
 </tr>
 <tr>
 <td>24</td>
 <td>EXPORTAR</td>
-<td style="background-color: #85513C; font-weight: bold;">PALABRA_RESERVADA</td>
+<td style="background-color:#8D5A3B; color:white; font-weight:bold;">PALABRA_RESERVADA</td>
 <td>16</td>
 <td>1</td>
 </tr>
 <tr>
 <td>25</td>
 <td>resultado</td>
-<td style="background-color: #468C7D; font-weight: bold;">IDENTIFICADOR</td>
+<td style="background-color:#4F9D8A; color:white; font-weight:bold;">IDENTIFICADOR</td>
 <td>16</td>
 <td>10</td>
 </tr>
 </table>
+</div>
+</div>
 </body>
 </html>

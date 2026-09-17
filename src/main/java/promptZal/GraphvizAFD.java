@@ -24,6 +24,9 @@ public class GraphvizAFD {
         
             archivo.write("digraph AFD {\n");
             archivo.write("rankdir=LR;\n\n");
+            archivo.write("graph [bgcolor=\"#F7F4EA\", pad=\"0.4\", nodesep=\"0.7\", ranksep=\"1.2\", dpi=180];\n");
+            archivo.write("node [fontname=\"Arial\", fontsize=12, style=filled, fillcolor=\"#F1F8F5\", color=\"#007A5E\"];\n");
+            archivo.write("edge [fontname=\"Arial\", fontsize=10, color=\"#444444\"];\n\n");
         
         
             //*******************ESTADO INICIAL********************
