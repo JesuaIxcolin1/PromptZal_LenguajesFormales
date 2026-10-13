@@ -36,7 +36,7 @@ ARROBA -> DIRECTIVA [label="letra"];
 ARROBA -> ERROR [label="otro"];
 DIRECTIVA -> DIRECTIVA [label="letra"];
 
-CADENA -> CADENA [label="caracter diferente de comilla y salto de linea"];
+CADENA -> CADENA [label="cualquier caracter excepto comilla y salto de linea"];
 CADENA -> CADENA_ACEPTADA [label="comilla doble"];
 CADENA -> ERROR [label="salto de linea"];
 

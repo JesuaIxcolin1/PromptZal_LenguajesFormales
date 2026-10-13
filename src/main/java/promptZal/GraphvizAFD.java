@@ -73,7 +73,7 @@ public class GraphvizAFD {
         
         
             //****************TRANSICIONES DE CADENAS****************
-            archivo.write("CADENA -> CADENA [label=\"caracter diferente de comilla y salto de linea\"];\n");
+            archivo.write("CADENA -> CADENA [label=\"cualquier caracter excepto comilla y salto de linea\"];\n");
             archivo.write("CADENA -> CADENA_ACEPTADA [label=\"comilla doble\"];\n");
             archivo.write("CADENA -> ERROR [label=\"salto de linea\"];\n\n");
         

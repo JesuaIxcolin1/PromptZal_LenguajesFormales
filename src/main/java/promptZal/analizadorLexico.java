@@ -105,58 +105,96 @@ public class analizadorLexico {
                     
                     boolean comentarioCerrado = false;
                     
-                    while(posicion < entrada.length()){
-                        
+                    while(posicion < entrada.length() && !comentarioCerrado){
+    
                         char caracter = entrada.charAt(posicion);
-                        
-                        
-                        //Se encontro *
-                        if(caracter == '*'){
-                            
-                            estado = estadoAFD.ASTERISCO_COMENTARIO;
-                            
-                            lexema.append(caracter);
-                            
-                            posicion++;
-                            columna++;
-                            
-                            
-                            //Verifica si despues del * viene /
-                            if(posicion < entrada.length() && entrada.charAt(posicion) == '/'){
-                                
-                                lexema.append('/');
-                                
+
+
+                        //*******************ESTADO COMENTARIO BLOQUE********************
+                        if(estado == estadoAFD.COMENTARIO_BLOQUE){
+
+
+                            //Se encontro *
+                            if(caracter == '*'){
+
+                                estado = estadoAFD.ASTERISCO_COMENTARIO;
+
+                                lexema.append(caracter);
+
                                 posicion++;
                                 columna++;
-                                
-                                estado = estadoAFD.COMENTARIO_BLOQUE_CERRADO;
-                                
-                                comentarioCerrado = true;
-                                break;
-                                
+
+
+                            //Salto de linea dentro del comentario
+                            }else if(caracter == '\n'){
+
+                                lexema.append(caracter);
+
+                                posicion++;
+                                fila++;
+                                columna = 1;
+
+
+                            //Cualquier otro caracter
                             }else{
-                                
+
+                                lexema.append(caracter);
+
+                                posicion++;
+                                columna++;
+                            }
+
+
+                        //*******************ESTADO ASTERISCO COMENTARIO********************
+                        }else if(estado == estadoAFD.ASTERISCO_COMENTARIO){
+
+
+                            //Se encontro el cierre */
+                            if(caracter == '/'){
+
+                                lexema.append(caracter);
+
+                                posicion++;
+                                columna++;
+
+                                estado = estadoAFD.COMENTARIO_BLOQUE_CERRADO;
+
+                                comentarioCerrado = true;
+
+
+                            //Permanece en ASTERISCO si encuentra otro *
+                            }else if(caracter == '*'){
+
+                                lexema.append(caracter);
+
+                                posicion++;
+                                columna++;
+
+                                estado = estadoAFD.ASTERISCO_COMENTARIO;
+
+
+                            //Salto de linea
+                            }else if(caracter == '\n'){
+
+                                lexema.append(caracter);
+
+                                posicion++;
+                                fila++;
+                                columna = 1;
+
+                                estado = estadoAFD.COMENTARIO_BLOQUE;
+
+
+                            //Cualquier otro caracter vuelve a COMENTARIO_BLOQUE
+                            }else{
+
+                                lexema.append(caracter);
+
+                                posicion++;
+                                columna++;
+
                                 estado = estadoAFD.COMENTARIO_BLOQUE;
                             }
-                            
-                            
-                        //Salto de linea dentro del comentario
-                        }else if(caracter == '\n'){
-                            
-                            lexema.append(caracter);
-                            
-                            posicion++;
-                            fila++;
-                            columna = 1;
-                            
-                            
-                        //Cualquier otro caracter
-                        }else{
-                            
-                            lexema.append(caracter);
-                            
-                            posicion++;
-                            columna++;
                         }
                     }
                     
@@ -394,22 +432,23 @@ public class analizadorLexico {
               
                         
                     //****************ESTADO PUNTO DECIMAL******************
-                    } else if (estado == estadoAFD.PUNTO_DECIMAL) {
-             
+                    }else if (estado == estadoAFD.PUNTO_DECIMAL) {
+
                         if (Character.isDigit(caracter)) {
 
                             estado = estadoAFD.DECIMAL;
-                            
+
                             lexema.append(caracter);
-             
+
                             posicion++;
                             columna++;
-             
+
                         } else {
 
+                            estado = estadoAFD.ERROR;
                             break;
                         }
-
+                    
                         
                     //****************ESTADO DECIMAL******************
                     } else if (estado == estadoAFD.DECIMAL) {
@@ -463,20 +502,20 @@ public class analizadorLexico {
 
                     
                 //Si termina en PUNTO_DECIMAL hay error
-                } else if(estado == estadoAFD.PUNTO_DECIMAL) {
-                
-                    estado = estadoAFD.ERROR;
-                    
-                    errorLexico error = new errorLexico(
-                            numero,
-                            "Numero decimal invalido",
-                            filaInicio,
-                            columnaInicio
-                    );
-                    
-                    listaErrores.add(error);
-                }
-                
+                }else if(estado == estadoAFD.PUNTO_DECIMAL|| estado == estadoAFD.ERROR) {
+
+                estado = estadoAFD.ERROR;
+
+                errorLexico error = new errorLexico(
+                        numero,
+                        "Numero decimal invalido",
+                        filaInicio,
+                        columnaInicio
+                );
+
+                listaErrores.add(error);
+            }
+
                 
                 estado = estadoAFD.INICIAL;
             
@@ -604,7 +643,7 @@ public class analizadorLexico {
                     
                     
             //*********************DELIMITADORES************************
-            }else if(actual == '{' || actual == '}' || actual == '('
+            }else if(actual == '#' || actual == '{' || actual == '}' || actual == '('
                     || actual == ')' || actual == ',' || actual == ';'){
                 
                 estado = estadoAFD.DELIMITADOR;
