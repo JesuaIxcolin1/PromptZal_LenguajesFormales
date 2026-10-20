@@ -81,3 +81,50 @@ import java.util.ArrayList;
 
     <COMENTARIO_BLOQUE>. {
     }
+
+    //**********DIRECTIVAS*************
+    <YYINITIAL>{DIRECTIVA}{
+        return crearToken(tipoToken.DIRECTIVA);
+    }
+
+    //*********PALABRAS RESERVADAS***********
+    <YYINITIAL>"AGENTE{
+        return crearToken(tipoToken.AGENTE);
+    }
+
+        <YYINITIAL>"contexto{
+        return crearToken(tipoToken.CONTEXTO);
+    }
+      
+        <YYINITIAL>"variable{
+        return crearToken(tipoToken.VARIABLE);
+    }
+
+        <YYINITIAL>"EJECUTAR{
+        return crearToken(tipoToken.EJECUTAR);
+    }
+
+        <YYINITIAL>"EXPORTAR{
+        return crearToken(tipoToken.EXPORTAR);
+    }
+    
+
+    //*********COMANDOS*************
+    <YYINITIAL>{COMANDO}{
+        return crearToken(tipoToken.COMANDO_IA);
+    }
+
+    //*********FUNCION CARGAR************
+    <YYINITIAL>"CARGAR"{
+        return crearToken(tipoToken.CARGAR);
+    }
+
+    //*********CONECTORES**********
+    <YYINITIAL>{CONECTOR}{
+        return crearToken(tipoToken.CONECTOR);
+    }
+
+    //************FLECHA*************
+    <YYINITIAL>"->"{
+        return crearToken(tipoToken.FLECHA);
+    }
