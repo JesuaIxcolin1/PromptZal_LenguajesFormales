@@ -39,7 +39,7 @@ public enum tipoToken {
     LLAVE_A,
     LLAVE_B,
     PAR_A,
-    PAR_C,
+    PAR_B,
     COMA,
     
     //Valores

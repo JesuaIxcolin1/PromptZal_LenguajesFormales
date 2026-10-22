@@ -7,6 +7,7 @@ import java.util.ArrayList;
 %public
 %class Lexer
 %unicode
+%line
 %column
 %type Token
 %state COMENTARIO_BLOQUE
@@ -16,7 +17,7 @@ import java.util.ArrayList;
     private ArrayList<errorLexico> listaErrores = new ArrayList<>();
 
     private int filaInicioComentario;
-    private int colmunaInicioComentario;
+    private int columnaInicioComentario;
 
     public ArrayList<errorLexico> getListaErrores(){
         return listaErrores;
@@ -39,7 +40,7 @@ import java.util.ArrayList;
     ENTERO = {DIGITO}+
     DECIMAL = {DIGITO}+ "."{DIGITO}+
     CADENA = \"[^\r\n\"]*\"
-    ESPACIO = [\t\r\n]+
+    ESPACIO = [ \t\r\n]+
 
     DIRECTIVA = "@modelo"|"@rol"|"@formato"
     COMANDO = "PREGUNTAR"|"GENERAR"|"RESUMIR"|"ANALIZAR"|"TRADUCIR"|"CLASIFICAR"|"EXTRAER"
@@ -51,7 +52,7 @@ import java.util.ArrayList;
 %%
 
     //***********ESPACIOS*********
-    <YINITIAL>{ESPACIO}{ //SE IGNORAN ESPACIOS, TABULACIONES Y SALTOS DE LINEA
+    <YYINITIAL>{ESPACIO} { //SE IGNORAN ESPACIOS, TABULACIONES Y SALTOS DE LINEA
     }
 
     //********COMENTARIOS*********
@@ -83,97 +84,126 @@ import java.util.ArrayList;
     }
 
     //**********DIRECTIVAS*************
-    <YYINITIAL>{DIRECTIVA}{
+    <YYINITIAL>{DIRECTIVA} {
         return crearToken(tipoToken.DIRECTIVA);
     }
 
     //*********PALABRAS RESERVADAS***********
-    <YYINITIAL>"AGENTE{
+    <YYINITIAL>"AGENTE" {
         return crearToken(tipoToken.AGENTE);
     }
 
-        <YYINITIAL>"contexto{
+        <YYINITIAL>"contexto" {
         return crearToken(tipoToken.CONTEXTO);
     }
       
-        <YYINITIAL>"variable{
+        <YYINITIAL>"variable" {
         return crearToken(tipoToken.VARIABLE);
     }
 
-        <YYINITIAL>"EJECUTAR{
+        <YYINITIAL>"EJECUTAR" {
         return crearToken(tipoToken.EJECUTAR);
     }
 
-        <YYINITIAL>"EXPORTAR{
+        <YYINITIAL>"EXPORTAR" {
         return crearToken(tipoToken.EXPORTAR);
     }
     
 
     //*********COMANDOS*************
-    <YYINITIAL>{COMANDO}{
+    <YYINITIAL>{COMANDO} {
         return crearToken(tipoToken.COMANDO_IA);
     }
 
     //*********FUNCION CARGAR************
-    <YYINITIAL>"CARGAR"{
+    <YYINITIAL>"CARGAR" {
         return crearToken(tipoToken.CARGAR);
     }
 
     //*********CONECTORES**********
-    <YYINITIAL>{CONECTOR}{
+    <YYINITIAL>{CONECTOR} {
         return crearToken(tipoToken.CONECTOR);
     }
 
     //************FLECHA*************
-    <YYINITIAL>"->"{
+    <YYINITIAL>"->" {
         return crearToken(tipoToken.FLECHA);
     }
 
     //**********OPERADORES*************
-    <YYINITIAL>"="{
+    <YYINITIAL>"=" {
         return crearToken(tipoToken.IGUAL);
     }
     
-    <YYINITIAL>"+"{
+    <YYINITIAL>"+" {
         return crearToken(tipoToken.MAS);
     }
 
     //**********DELIMITADORES***************
-    <YYINITIAL>"{"{
+    <YYINITIAL>"{" {
         return crearToken(tipoToken.LLAVE_A);
     }
 
-    <YYINITIAL>"}"{
+    <YYINITIAL>"}" {
         return crearToken(tipoToken.LLAVE_B);
     }
 
-    <YYINITIAL>"("{
+    <YYINITIAL>"(" {
         return crearToken(tipoToken.PAR_A);
     }
 
-    <YYINITIAL>")"{
+    <YYINITIAL>")" {
         return crearToken(tipoToken.PAR_B);
     }
 
-    <YYINITIAL>","{
+    <YYINITIAL>"," {
         return crearToken(tipoToken.COMA);
     }
 
     //***********CADENAS*****************
-    <YYINITIAL>"{CADENA}{
+    <YYINITIAL>{CADENA} {
         return crearToken(tipoToken.CADENA);
     }
 
     //***************NUMEROS******************
-    <YYINITIAL>{DECIMAL}{
+    <YYINITIAL>{DECIMAL} {
         return crearToken(tipoToken.NUMERO);
     }
 
-    <YYINITIAL>{ENTERO}{
+    <YYINITIAL>{ENTERO} {
         return crearToken(tipoToken.NUMERO);
     }
 
     //****************IDENTIFICADORES*************
-    <YYINITIAL>"{ID}{
+    <YYINITIAL>{ID} {
         return crearToken(tipoToken.ID);
+    }
+
+    //****************ERRORES LEXICOS******************
+    <YYINITIAL>{DIRECTIVA_INVALIDA} {
+        registrarError(yytext(),"Directiva no reconocida",yyline + 1,yycolumn + 1);
+    }
+
+    <YYINITIAL>{DECIMAL_INVALIDO} {
+        registrarError(yytext(),"Numero decimal invalido",yyline + 1,yycolumn + 1);
+    }
+    
+    <YYINITIAL>{CADENA_SIN_CERRAR} {
+        registrarError(yytext(),"Cadena sin cerrar",yyline + 1,yycolumn + 1);
+    }
+
+    <YYINITIAL>. {
+        registrarError(yytext(),"Caracter no reconocido",yyline + 1,yycolumn + 1);
+    }
+
+    //****************FIN DEL ARCHIVO******************
+    <YYINITIAL><<EOF>> {
+        return new Token(tipoToken.EOF,"EOF",yyline + 1,yycolumn + 1);
+    }
+
+    <COMENTARIO_BLOQUE><<EOF>> {
+        registrarError("/*","Comentario de bloque sin cerrar",filaInicioComentario, columnaInicioComentario);
+        
+        yybegin(YYINITIAL);
+        return new Token(tipoToken.EOF,"EOF",yyline + 1,yycolumn + 1);
     }
