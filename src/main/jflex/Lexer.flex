@@ -48,7 +48,7 @@ import java.util.ArrayList;
     DIRECTIVA_INVALIDA = "@"({LETRA}|{DIGITO}|_)*
     DECIMAL_INVALIDO = {DIGITO}+"."
     CADENA_SIN_CERRAR = \"[^\r\n\"]*
-    %%
+%%
 
     //***********ESPACIOS*********
     <YINITIAL>{ESPACIO}{ //SE IGNORAN ESPACIOS, TABULACIONES Y SALTOS DE LINEA
@@ -127,4 +127,53 @@ import java.util.ArrayList;
     //************FLECHA*************
     <YYINITIAL>"->"{
         return crearToken(tipoToken.FLECHA);
+    }
+
+    //**********OPERADORES*************
+    <YYINITIAL>"="{
+        return crearToken(tipoToken.IGUAL);
+    }
+    
+    <YYINITIAL>"+"{
+        return crearToken(tipoToken.MAS);
+    }
+
+    //**********DELIMITADORES***************
+    <YYINITIAL>"{"{
+        return crearToken(tipoToken.LLAVE_A);
+    }
+
+    <YYINITIAL>"}"{
+        return crearToken(tipoToken.LLAVE_B);
+    }
+
+    <YYINITIAL>"("{
+        return crearToken(tipoToken.PAR_A);
+    }
+
+    <YYINITIAL>")"{
+        return crearToken(tipoToken.PAR_B);
+    }
+
+    <YYINITIAL>","{
+        return crearToken(tipoToken.COMA);
+    }
+
+    //***********CADENAS*****************
+    <YYINITIAL>"{CADENA}{
+        return crearToken(tipoToken.CADENA);
+    }
+
+    //***************NUMEROS******************
+    <YYINITIAL>{DECIMAL}{
+        return crearToken(tipoToken.NUMERO);
+    }
+
+    <YYINITIAL>{ENTERO}{
+        return crearToken(tipoToken.NUMERO);
+    }
+
+    //****************IDENTIFICADORES*************
+    <YYINITIAL>"{ID}{
+        return crearToken(tipoToken.ID);
     }

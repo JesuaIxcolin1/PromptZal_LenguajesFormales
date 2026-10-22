@@ -37,7 +37,7 @@ public enum tipoToken {
     
     //Delimitadores
     LLAVE_A,
-    LLAVE_C,
+    LLAVE_B,
     PAR_A,
     PAR_C,
     COMA,
