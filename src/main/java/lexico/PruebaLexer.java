@@ -5,6 +5,9 @@
 package lexico;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import sintactico.Parser;
+import sintactico.errorSintactico;
 
 /**
  *
@@ -34,12 +37,14 @@ public class PruebaLexer {
                 + "EXPORTAR resumen\n";
 
         Lexer lexer = new Lexer(new StringReader(codigo));
+        ArrayList<Token> listaTokens = new ArrayList<>();
 
         Token token;
 
         do {
 
             token = lexer.yylex();
+            listaTokens.add(token);
 
             System.out.println(
                     token.getTipo()
@@ -74,5 +79,23 @@ public class PruebaLexer {
                 );
             }
         }
-    }
+        
+        //****************PRUEBA DEL PARSER******************
+        Parser parser = new Parser(listaTokens);
+        parser.analizar();
+        System.out.println("\nERRORES SINTACTICOS:");
+
+        if (parser.getErrores().isEmpty()) {
+
+            System.out.println("No hay errores sintacticos.");
+
+        } else {
+
+            for (errorSintactico error : parser.getErrores()) {
+
+                System.out.println("Encontrado: "+ error.getEncontrado()+ " | Esperado: "+ error.getEsperado()+ " | Fila: "
+                + error.getFila() + " | Columna: "+ error.getColumna());
+            }
+        }
+    }  
 }
