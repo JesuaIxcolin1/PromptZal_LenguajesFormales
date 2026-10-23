@@ -23,17 +23,14 @@ public class PruebaLexer {
                 + "@rol \"analista de datos\"\n"
                 + "@formato \"markdown\"\n"
                 + "\n"
-                + "// Comentario de prueba\n"
-                + "\n"
-                + "AGENTE analista {\n"
-                + "    contexto = \"Eres un analista de datos experto\"\n"
+                + "AGENTE analista\n" // ERROR 1: falta {
+                + "    contexto =\n" // ERROR 2: falta CADENA
                 + "    variable ventas = CARGAR(\"ventas.csv\")\n"
                 + "\n"
                 + "    PREGUNTAR \"Cuales son las tendencias principales?\" SOBRE ventas -> tendencias\n"
                 + "    RESUMIR tendencias EN 100 palabras -> resumen\n"
-                + "}\n"
-                + "\n"
-                + "EJECUTAR analista\n"
+                + "\n" // ERROR 3: falta }
+                + "EJECUTAR\n" // ERROR 4: falta ID del agente
                 + "EXPORTAR resumen\n";
 
         Lexer lexer = new Lexer(new StringReader(codigo));

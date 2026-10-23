@@ -50,6 +50,17 @@ public class Parser {
         }
     }
     
+    private boolean esSincronizacion() {
+        return es(tipoToken.AGENTE)|| es(tipoToken.CONTEXTO)|| es(tipoToken.VARIABLE)|| es(tipoToken.COMANDO_IA)
+            || es(tipoToken.LLAVE_B)|| es(tipoToken.EJECUTAR)|| es(tipoToken.EXPORTAR) || es(tipoToken.EOF);
+    }
+    
+    private void recuperar() {
+        while (!es(tipoToken.EOF) && !esSincronizacion()) {
+            avanzar();
+        }
+    }
+    
     //Ver si el tipo de token es el esperado
     private boolean es(tipoToken tipo) {
     return actual().getTipo() == tipo;
@@ -63,6 +74,7 @@ public class Parser {
             
             errores.add(new errorSintactico(tokenActual.getTipo().toString(),
             esperado.toString(), tokenActual.getFila(), tokenActual.getColumna()));
+            recuperar();
         }
     
     }
