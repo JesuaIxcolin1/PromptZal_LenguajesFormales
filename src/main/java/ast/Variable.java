@@ -4,6 +4,8 @@
  */
 package ast;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author jesua
@@ -14,10 +16,15 @@ public class Variable {
     private String valor;
     private int fila;
 
+    private ArrayList<String> identificadoresUsados;
+
     public Variable(String nombre, String valor, int fila) {
+
         this.nombre = nombre;
         this.valor = valor;
         this.fila = fila;
+
+        this.identificadoresUsados = new ArrayList<>();
     }
 
     public String getNombre() {
@@ -30,5 +37,13 @@ public class Variable {
 
     public int getFila() {
         return fila;
+    }
+
+    public void agregarIdentificadorUsado(String identificador) {
+        identificadoresUsados.add(identificador);
+    }
+
+    public ArrayList<String> getIdentificadoresUsados() {
+        return identificadoresUsados;
     }
 }

@@ -14,8 +14,8 @@ public class Programa {
     
     private ArrayList<Directiva> directivas;
     private ArrayList<Agente> agentes;
-    private ArrayList<String> ejecuciones;
-    private ArrayList<String> exportaciones;
+    private ArrayList<Ejecucion> ejecuciones;
+    private ArrayList<Exportacion> exportaciones;
 
     public Programa() {
 
@@ -45,22 +45,22 @@ public class Programa {
         
     }
     
-    public void agregarEjecucion(String nombreAgente) {
-    ejecuciones.add(nombreAgente);
-    
-    }
-
-    public void agregarExportacion(String nombreVariable) {
-        exportaciones.add(nombreVariable);
+    public void agregarEjecucion(Ejecucion ejecucion) {
+        ejecuciones.add(ejecucion);
         
     }
 
-    public ArrayList<String> getEjecuciones() {
+    public void agregarExportacion(Exportacion exportacion) {
+        exportaciones.add(exportacion);
+        
+    }
+
+    public ArrayList<Ejecucion> getEjecuciones() {
         return ejecuciones;
         
     }
 
-    public ArrayList<String> getExportaciones() {
+    public ArrayList<Exportacion> getExportaciones() {
         return exportaciones;
         
     }

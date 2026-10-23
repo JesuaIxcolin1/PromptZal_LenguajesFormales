@@ -15,12 +15,13 @@ public class Comando {
     private String tipo;
     private String destino;
     private int fila;
-
+    private ArrayList<String> identificadoresUsados;
     private ArrayList<String> argumentos;
 
     public Comando(String tipo, int fila) {
         this.tipo = tipo;
         this.fila = fila;
+        this.identificadoresUsados = new ArrayList<>();
 
         this.argumentos = new ArrayList<>();
     }
@@ -47,5 +48,13 @@ public class Comando {
 
     public ArrayList<String> getArgumentos() {
         return argumentos;
+    }
+    
+    public void agregarIdentificadorUsado(String identificador) {
+    identificadoresUsados.add(identificador);
+    }
+
+    public ArrayList<String> getIdentificadoresUsados() {
+        return identificadoresUsados;
     }
 }

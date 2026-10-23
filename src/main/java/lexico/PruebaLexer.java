@@ -15,6 +15,10 @@ import ast.Variable;
 import ast.Comando;
 import semantico.TablaSimbolos;
 import semantico.Simbolo;
+import semantico.AnalizadorSemantico;
+import semantico.errorSemantico;
+import ast.Ejecucion;
+import ast.Exportacion;
 
 /**
  *
@@ -25,23 +29,22 @@ public class PruebaLexer {
 
     public static void main(String[] args) throws Exception {
 
-String codigo =
-        "@modelo \"claude-sonnet-4-6\"\n"
-        + "@rol \"analista de datos\"\n"
-        + "@formato \"markdown\"\n"
-        + "\n"
-        + "// Comentario de prueba\n"
-        + "\n"
-        + "AGENTE analista {\n"
-        + "    contexto = \"Eres un analista de datos experto\"\n"
-        + "    variable ventas = CARGAR(\"ventas.csv\")\n"
-        + "\n"
-        + "    PREGUNTAR \"Cuales son las tendencias principales?\" SOBRE ventas -> tendencias\n"
-        + "    RESUMIR tendencias EN 100 palabras -> resumen\n"
-        + "}\n"
-        + "\n"
-        + "EJECUTAR analista\n"
-        + "EXPORTAR resumen\n";
+    String codigo =
+            "@modelo \"claude-sonnet-4-6\"\n"
+            + "@rol \"analista de datos\"\n"
+            + "@formato \"markdown\"\n"
+            + "\n"
+            + "AGENTE analista {\n"
+            + "    contexto = \"Eres un analista de datos experto\"\n"
+            + "    variable ventas = CARGAR(\"ventas.csv\")\n"
+            + "    PREGUNTAR \"Cuales son las tendencias principales?\" SOBRE ventas -> tendencias\n"
+            + "    RESUMIR tendencias EN 100 palabras -> resumen\n"
+            + "}\n"
+            + "\n"
+            + "EJECUTAR analista\n"
+            + "EXPORTAR inexistente\n";
+
+
 
         Lexer lexer = new Lexer(new StringReader(codigo));
         ArrayList<Token> listaTokens = new ArrayList<>();
@@ -178,21 +181,22 @@ String codigo =
                 }
                 
                 System.out.println("");
-                System.out.println("\nAST - EJECUCIONES:");
-                for (String ejecucion : programaAST.getEjecuciones()) {
-
-                    System.out.println(
-                            "Ejecutar: " + ejecucion );
+                System.out.println("\nAST - EJECUCIONES:");for (Ejecucion ejecucion : programaAST.getEjecuciones()) {
+                System.out.println("Ejecutar: "+ ejecucion.getNombreAgente()+ " | Fila: "+ ejecucion.getFila());
                 }
                 
                 System.out.println("");
                 System.out.println("\nAST - EXPORTACIONES:");
 
-                for (String exportacion : programaAST.getExportaciones()) {
+                for (Exportacion exportacion : programaAST.getExportaciones()) {
 
-                    System.out.println("Exportar: "+ exportacion);
+                    System.out.println(
+                            "Exportar: "
+                            + exportacion.getNombreVariable()
+                            + " | Fila: "
+                            + exportacion.getFila()
+                    );
                 }
-            }
             
             //****************TABLA DE SIMBOLOS******************
             TablaSimbolos tabla = new TablaSimbolos();
@@ -211,7 +215,25 @@ String codigo =
                         + simbolo.getFila()
                 );
             }
-        }
+            
+            //****************ANALISIS SEMANTICO******************
+            AnalizadorSemantico analizadorSemantico = new AnalizadorSemantico(programaAST);
+            analizadorSemantico.analizar();
+            System.out.println("\nERRORES SEMANTICOS:");
+
+            if (analizadorSemantico.getErrores().isEmpty()) {
+
+                System.out.println("No hay errores semanticos.");
+
+            } else {
+
+                for (errorSemantico error : analizadorSemantico.getErrores()) {
+
+                    System.out.println(error.getDescripcion()+ " | Fila: "+ error.getFila());
+                    }
+                }
+            }
         
-    } 
+        } 
+    }
 }
