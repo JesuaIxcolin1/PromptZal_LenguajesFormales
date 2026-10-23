@@ -19,6 +19,7 @@ import semantico.AnalizadorSemantico;
 import semantico.errorSemantico;
 import ast.Ejecucion;
 import ast.Exportacion;
+import generador.GeneradorPromptZal;
 
 /**
  *
@@ -29,20 +30,21 @@ public class PruebaLexer {
 
     public static void main(String[] args) throws Exception {
 
-    String codigo =
-            "@modelo \"claude-sonnet-4-6\"\n"
-            + "@rol \"analista de datos\"\n"
-            + "@formato \"markdown\"\n"
-            + "\n"
-            + "AGENTE analista {\n"
-            + "    contexto = \"Eres un analista de datos experto\"\n"
-            + "    variable ventas = CARGAR(\"ventas.csv\")\n"
-            + "    PREGUNTAR \"Cuales son las tendencias principales?\" SOBRE ventas -> tendencias\n"
-            + "    RESUMIR tendencias EN 100 palabras -> resumen\n"
-            + "}\n"
-            + "\n"
-            + "EJECUTAR analista\n"
-            + "EXPORTAR inexistente\n";
+        String codigo =
+        "@modelo \"claude-sonnet-4-6\"\n"
+        + "@rol \"analista de datos\"\n"
+        + "@formato \"markdown\"\n"
+        + "\n"
+        + "AGENTE analista {\n"
+        + "    contexto = \"Eres un analista de datos experto\"\n"
+        + "    variable ventas = CARGAR(\"ventas.csv\")\n"
+        + "\n"
+        + "    PREGUNTAR \"Cuales son las tendencias principales?\" SOBRE ventas -> tendencias\n"
+        + "    RESUMIR tendencias EN 100 palabras -> resumen\n"
+        + "}\n"
+        + "\n"
+        + "EJECUTAR analista\n"
+        + "EXPORTAR resumen\n";
 
 
 
@@ -119,43 +121,23 @@ public class PruebaLexer {
 
             for (Directiva directiva : programaAST.getDirectivas()) {
 
-                System.out.println(
-                        directiva.getTipo()
-                        + " = "
-                        + directiva.getValor()
-                        + " | Fila: "
-                        + directiva.getFila()
-                );
+                System.out.println(directiva.getTipo()+ " = "+ directiva.getValor() + " | Fila: "+ directiva.getFila());
             }
 
             System.out.println("\nAST - AGENTES:");
 
             for (Agente agente : programaAST.getAgentes()) {
 
-                System.out.println(
-                        "Agente: "
-                        + agente.getNombre()
-                        + " | Fila: "
-                        + agente.getFila()
-                );
+                System.out.println( "Agente: "+ agente.getNombre()+ " | Fila: "+ agente.getFila());
 
-                System.out.println(
-                        "Contexto: "
-                        + agente.getContexto()
-                );
+                System.out.println("Contexto: "+ agente.getContexto());
                 
                 System.out.println("");
                 System.out.println("Variables:");
 
                 for (Variable variable : agente.getVariables()) {
 
-                    System.out.println(
-                            variable.getNombre()
-                            + " = "
-                            + variable.getValor()
-                            + " | Fila: "
-                            + variable.getFila()
-                    );
+                    System.out.println(variable.getNombre()+ " = "+ variable.getValor()+ " | Fila: "+ variable.getFila() );
                 }
                 
                 System.out.println("");
@@ -163,20 +145,11 @@ public class PruebaLexer {
 
                 for (Comando comando : agente.getComandos()) {
 
-                    System.out.println(
-                            comando.getTipo()
-                            + " -> "
-                            + comando.getDestino()
-                            + " | Fila: "
-                            + comando.getFila()
-                    );
+                    System.out.println( comando.getTipo()+ " -> "+ comando.getDestino()+ " | Fila: "+ comando.getFila());
 
                     for (String argumento : comando.getArgumentos()) {
 
-                        System.out.println(
-                                "   Argumento: "
-                                + argumento
-                        );
+                        System.out.println("   Argumento: "+ argumento);
                     }
                 }
                 
@@ -220,18 +193,20 @@ public class PruebaLexer {
             AnalizadorSemantico analizadorSemantico = new AnalizadorSemantico(programaAST);
             analizadorSemantico.analizar();
             System.out.println("\nERRORES SEMANTICOS:");
-
+            
             if (analizadorSemantico.getErrores().isEmpty()) {
-
                 System.out.println("No hay errores semanticos.");
 
+                 //****************GENERACION DEL PROMPTZAL******************
+                 GeneradorPromptZal generador = new GeneradorPromptZal();
+                 String promptGenerado = generador.generar(programaAST);
+                 System.out.println("\n" + promptGenerado);
             } else {
-
+                
                 for (errorSemantico error : analizadorSemantico.getErrores()) {
-
                     System.out.println(error.getDescripcion()+ " | Fila: "+ error.getFila());
-                    }
                 }
+            }
             }
         
         } 
