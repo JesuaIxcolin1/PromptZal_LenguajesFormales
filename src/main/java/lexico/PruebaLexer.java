@@ -13,6 +13,8 @@ import ast.Directiva;
 import ast.Agente;
 import ast.Variable;
 import ast.Comando;
+import semantico.TablaSimbolos;
+import semantico.Simbolo;
 
 /**
  *
@@ -190,6 +192,24 @@ String codigo =
 
                     System.out.println("Exportar: "+ exportacion);
                 }
+            }
+            
+            //****************TABLA DE SIMBOLOS******************
+            TablaSimbolos tabla = new TablaSimbolos();
+            tabla.construir(programaAST);
+            System.out.println("\nTABLA DE SIMBOLOS:");
+
+            for (Simbolo simbolo : tabla.getSimbolos()) {
+
+                System.out.println(
+                        simbolo.getNombre()
+                        + " | "
+                        + simbolo.getTipo()
+                        + " | Ambito: "
+                        + simbolo.getAmbito()
+                        + " | Fila: "
+                        + simbolo.getFila()
+                );
             }
         }
         
