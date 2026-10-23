@@ -8,6 +8,11 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import sintactico.Parser;
 import sintactico.errorSintactico;
+import ast.Programa;
+import ast.Directiva;
+import ast.Agente;
+import ast.Variable;
+import ast.Comando;
 
 /**
  *
@@ -18,20 +23,23 @@ public class PruebaLexer {
 
     public static void main(String[] args) throws Exception {
 
-        String codigo =
-                "@modelo \"claude-sonnet-4-6\"\n"
-                + "@rol \"analista de datos\"\n"
-                + "@formato \"markdown\"\n"
-                + "\n"
-                + "AGENTE analista\n" // ERROR 1: falta {
-                + "    contexto =\n" // ERROR 2: falta CADENA
-                + "    variable ventas = CARGAR(\"ventas.csv\")\n"
-                + "\n"
-                + "    PREGUNTAR \"Cuales son las tendencias principales?\" SOBRE ventas -> tendencias\n"
-                + "    RESUMIR tendencias EN 100 palabras -> resumen\n"
-                + "\n" // ERROR 3: falta }
-                + "EJECUTAR\n" // ERROR 4: falta ID del agente
-                + "EXPORTAR resumen\n";
+String codigo =
+        "@modelo \"claude-sonnet-4-6\"\n"
+        + "@rol \"analista de datos\"\n"
+        + "@formato \"markdown\"\n"
+        + "\n"
+        + "// Comentario de prueba\n"
+        + "\n"
+        + "AGENTE analista {\n"
+        + "    contexto = \"Eres un analista de datos experto\"\n"
+        + "    variable ventas = CARGAR(\"ventas.csv\")\n"
+        + "\n"
+        + "    PREGUNTAR \"Cuales son las tendencias principales?\" SOBRE ventas -> tendencias\n"
+        + "    RESUMIR tendencias EN 100 palabras -> resumen\n"
+        + "}\n"
+        + "\n"
+        + "EJECUTAR analista\n"
+        + "EXPORTAR resumen\n";
 
         Lexer lexer = new Lexer(new StringReader(codigo));
         ArrayList<Token> listaTokens = new ArrayList<>();
@@ -94,5 +102,96 @@ public class PruebaLexer {
                 + error.getFila() + " | Columna: "+ error.getColumna());
             }
         }
-    }  
+
+        
+        //****************PRUEBA DEL AST******************
+        
+    if (parser.getErrores().isEmpty()) {
+        
+        Programa programaAST = parser.getProgramaAST();
+
+            System.out.println("\nAST - DIRECTIVAS:");
+
+            for (Directiva directiva : programaAST.getDirectivas()) {
+
+                System.out.println(
+                        directiva.getTipo()
+                        + " = "
+                        + directiva.getValor()
+                        + " | Fila: "
+                        + directiva.getFila()
+                );
+            }
+
+            System.out.println("\nAST - AGENTES:");
+
+            for (Agente agente : programaAST.getAgentes()) {
+
+                System.out.println(
+                        "Agente: "
+                        + agente.getNombre()
+                        + " | Fila: "
+                        + agente.getFila()
+                );
+
+                System.out.println(
+                        "Contexto: "
+                        + agente.getContexto()
+                );
+                
+                System.out.println("");
+                System.out.println("Variables:");
+
+                for (Variable variable : agente.getVariables()) {
+
+                    System.out.println(
+                            variable.getNombre()
+                            + " = "
+                            + variable.getValor()
+                            + " | Fila: "
+                            + variable.getFila()
+                    );
+                }
+                
+                System.out.println("");
+                System.out.println("Comandos:");
+
+                for (Comando comando : agente.getComandos()) {
+
+                    System.out.println(
+                            comando.getTipo()
+                            + " -> "
+                            + comando.getDestino()
+                            + " | Fila: "
+                            + comando.getFila()
+                    );
+
+                    for (String argumento : comando.getArgumentos()) {
+
+                        System.out.println(
+                                "   Argumento: "
+                                + argumento
+                        );
+                    }
+                }
+                
+                System.out.println("");
+                System.out.println("\nAST - EJECUCIONES:");
+                for (String ejecucion : programaAST.getEjecuciones()) {
+
+                    System.out.println(
+                            "Ejecutar: " + ejecucion );
+                }
+                
+                System.out.println("");
+                System.out.println("\nAST - EXPORTACIONES:");
+
+                for (String exportacion : programaAST.getExportaciones()) {
+
+                    System.out.println("Exportar: "+ exportacion);
+                }
+            }
+        }
+        
+    } 
 }

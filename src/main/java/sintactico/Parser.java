@@ -7,7 +7,11 @@ package sintactico;
 import java.util.ArrayList;
 import lexico.Token;
 import lexico.tipoToken;
-
+import ast.Programa;
+import ast.Directiva;
+import ast.Agente;
+import ast.Variable;
+import ast.Comando;
 /**
  *
  * @author jesua
@@ -17,12 +21,21 @@ public class Parser {
     private ArrayList<Token> tokens;
     private ArrayList<errorSintactico> errores;
     private int posicion;
+    private Programa programaAST;
+    private Agente agenteActual;
+
     
     public Parser(ArrayList<Token> tokens) {
 
         this.tokens = tokens;
         this.errores = new ArrayList<>();
         this.posicion = 0;
+        
+        this.programaAST = new Programa();
+    }
+    
+    public Programa getProgramaAST(){
+        return programaAST;
     }
     
     public ArrayList<errorSintactico> getErrores() {
@@ -96,9 +109,15 @@ public class Parser {
     private void directivas(){
         if(es(tipoToken.DIRECTIVA)){
             
+            Token tokenDirectiva = actual();
             consumir(tipoToken.DIRECTIVA);
+            Token tokenValor = actual();
             consumir(tipoToken.CADENA);
             
+            Directiva directiva = new Directiva(tokenDirectiva.getLexema(), tokenValor.getLexema(),
+            tokenDirectiva.getFila());
+            
+            programaAST.agregarDirectiva(directiva);
             directivas();
         }
     }
@@ -116,33 +135,70 @@ public class Parser {
         }
     }
     
-    private void agente(){
+    private void agente() {
+
         consumir(tipoToken.AGENTE);
+
+        Token tokenNombre = actual();
+
         consumir(tipoToken.ID);
+
+        agenteActual = new Agente(
+                tokenNombre.getLexema(),
+                tokenNombre.getFila()
+        );
+
         consumir(tipoToken.LLAVE_A);
-        
+
         contexto();
         variables();
         comandos();
-        
+
         consumir(tipoToken.LLAVE_B);
+
+        programaAST.agregarAgente(agenteActual);
+
+        agenteActual = null;
     }
     
     //************CONTEXTO***************
     private void contexto(){
-        consumir(tipoToken.CONTEXTO);
-        consumir(tipoToken.IGUAL);
-        consumir(tipoToken.CADENA);
+    consumir(tipoToken.CONTEXTO);
+    consumir(tipoToken.IGUAL);
+
+    Token tokenContexto = actual();
+
+    consumir(tipoToken.CADENA);
+
+    if (agenteActual != null) {
+        agenteActual.setContexto(tokenContexto.getLexema());
+         }
     }
     
     //*********VARIABLES****************
-    private void variables(){
-        if(es(tipoToken.VARIABLE)){
+    private void variables() {
+
+        if (es(tipoToken.VARIABLE)) {
+
             consumir(tipoToken.VARIABLE);
+
+            Token tokenNombre = actual();
             consumir(tipoToken.ID);
+
             consumir(tipoToken.IGUAL);
-            
-            expresion();
+
+            String valorVariable = obtenerExpresionTexto();
+
+            Variable variable = new Variable(
+                    tokenNombre.getLexema(),
+                    valorVariable,
+                    tokenNombre.getFila()
+            );
+
+            if (agenteActual != null) {
+                agenteActual.agregarVariable(variable);
+            }
+
             variables();
         }
     }
@@ -215,12 +271,37 @@ public class Parser {
     }
     
     private void comando() {
+
+        Token tokenComando = actual();
         consumir(tipoToken.COMANDO_IA);
-        expresion();
-        conectores();
-        
+
+        Comando comando = new Comando(
+                tokenComando.getLexema(),
+                tokenComando.getFila()
+        );
+
+        String argumentoPrincipal = obtenerExpresionTexto();
+        comando.agregarArgumento(argumentoPrincipal);
+
+        while (es(tipoToken.CONECTOR)) {
+
+            Token tokenConector = actual();
+            consumir(tipoToken.CONECTOR);
+            String argumento = obtenerExpresionTexto();
+            comando.agregarArgumento(tokenConector.getLexema()+ " "+ argumento);
+        }
+
         consumir(tipoToken.FLECHA);
+
+        Token tokenDestino = actual();
+
         consumir(tipoToken.ID);
+
+        comando.setDestino(tokenDestino.getLexema());
+
+        if (agenteActual != null) {
+            agenteActual.agregarComando(comando);
+        }
     }
     
     private void conectores() {
@@ -234,34 +315,120 @@ public class Parser {
     
     //****************EJECUCIONES******************
     private void ejecuciones() {
-    consumir(tipoToken.EJECUTAR);
-    consumir(tipoToken.ID);
 
-    masEjecuciones();
+        consumir(tipoToken.EJECUTAR);
+
+        Token tokenAgente = actual();
+
+        consumir(tipoToken.ID);
+
+        programaAST.agregarEjecucion(
+                tokenAgente.getLexema()
+        );
+
+        masEjecuciones();
     }
     
     private void masEjecuciones() {
 
         if (es(tipoToken.EJECUTAR)) {
+
             consumir(tipoToken.EJECUTAR);
+
+            Token tokenAgente = actual();
+
             consumir(tipoToken.ID);
+
+            programaAST.agregarEjecucion(
+                    tokenAgente.getLexema()
+            );
+
             masEjecuciones();
         }
     }
     
     //****************EXPORTAR******************
     private void exportar() {
+
         consumir(tipoToken.EXPORTAR);
+
+        Token tokenVariable = actual();
+
         consumir(tipoToken.ID);
+
+        programaAST.agregarExportacion(
+                tokenVariable.getLexema()
+        );
+
         masIds();
     }
     
     private void masIds() {
+
         if (es(tipoToken.COMA)) {
-                
+
             consumir(tipoToken.COMA);
+
+            Token tokenVariable = actual();
+
             consumir(tipoToken.ID);
+
+            programaAST.agregarExportacion(
+                    tokenVariable.getLexema()
+            );
+
             masIds();
+        }
     }
-}
+    
+    private String obtenerExpresionTexto() {
+
+    String texto = "";
+        if (es(tipoToken.CADENA)) {
+            
+            texto = actual().getLexema();
+            consumir(tipoToken.CADENA);
+        
+        } else if (es(tipoToken.ID)) {
+            
+            texto = actual().getLexema();
+            consumir(tipoToken.ID);
+
+        } else if (es(tipoToken.NUMERO)) {
+
+                texto = actual().getLexema();
+                consumir(tipoToken.NUMERO);
+
+        if (es(tipoToken.ID)) {
+
+                    texto += " " + actual().getLexema();
+                    consumir(tipoToken.ID);
+                }
+
+        } else if (es(tipoToken.CARGAR)) {
+
+                texto = actual().getLexema();
+                consumir(tipoToken.CARGAR);
+
+                consumir(tipoToken.PAR_A);
+
+                texto += "(" + actual().getLexema();
+                consumir(tipoToken.CADENA);
+
+                consumir(tipoToken.PAR_B);
+
+                texto += ")";
+            }
+
+        while (es(tipoToken.MAS)) {
+            consumir(tipoToken.MAS);
+            texto += " + ";
+            if (es(tipoToken.CADENA) || es(tipoToken.ID) || es(tipoToken.NUMERO)) {
+
+                texto += actual().getLexema();
+                avanzar();
+            }
+        }
+        return texto;
+    }
 }
