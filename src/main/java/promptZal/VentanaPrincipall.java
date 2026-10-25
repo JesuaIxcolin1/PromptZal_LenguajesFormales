@@ -40,7 +40,6 @@ import lexico.tipoToken;
 public class VentanaPrincipall extends javax.swing.JFrame {
     
     private String rutaActual = null;
-    private analizadorLexico analizadorActual;
     private CompiladorPromptZal compiladorActual;
     
     //****************COLORES DEL EDITOR****************
