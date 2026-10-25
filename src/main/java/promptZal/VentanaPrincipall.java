@@ -21,7 +21,17 @@ import reportes.ReporteTablaSimbolos;
 import reportes.ReporteAST;
 import reportes.ReporteErrores;
 import reportes.ReporteTokens;
-
+import java.awt.Color;
+import java.io.StringReader;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import lexico.Lexer;
+import lexico.Token;
+import lexico.tipoToken;
 
 /**
  *
@@ -32,17 +42,42 @@ public class VentanaPrincipall extends javax.swing.JFrame {
     private String rutaActual = null;
     private analizadorLexico analizadorActual;
     private CompiladorPromptZal compiladorActual;
+    
+    //****************COLORES DEL EDITOR****************
+
+    private Style estiloNormal;
+    private Style estiloDirectiva;
+    private Style estiloReservada;
+    private Style estiloComando;
+    private Style estiloConector;
+    private Style estiloFuncion;
+    private Style estiloCadena;
+    private Style estiloNumero;
+    private Style estiloOperador;
+    private Style estiloDelimitador;
+    
+    //****************ESTILOS DEL PROMPT GENERADO****************
+
+    private Style estiloPromptNormal;
+    private Style estiloPromptTitulo;
+    private Style estiloPromptSeccion;
+    private Style estiloPromptDato;
+    private Style estiloPromptAgente;
+    private Style estiloPromptResultado;
 
     /**
      * Creates new form VentanaPrincipall
      */
     public VentanaPrincipall() {
+
         initComponents();
         
         setLocationRelativeTo(null);
         setTitle("===============PROMPTZAL===============");
-        
+
         aplicarEstilo();
+        configurarColoresEditor();
+        configurarEstilosPrompt();
     }
 
     /**
@@ -62,8 +97,6 @@ public class VentanaPrincipall extends javax.swing.JFrame {
         btnTablaSimbolos = new javax.swing.JButton();
         btnVerAST = new javax.swing.JButton();
         editorPromptzal = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtEditor = new javax.swing.JTextArea();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaTokens = new javax.swing.JTable();
@@ -71,10 +104,12 @@ public class VentanaPrincipall extends javax.swing.JFrame {
         tablaErrores = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        txtPromptGenerado = new javax.swing.JTextArea();
+        txtPromptGenerado = new javax.swing.JTextPane();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        txtEditor = new javax.swing.JTextPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -92,7 +127,7 @@ public class VentanaPrincipall extends javax.swing.JFrame {
             }
         });
 
-        btnAnalizar.setText("ANALIZAR");
+        btnAnalizar.setText("COMPILAR");
         btnAnalizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAnalizarActionPerformed(evt);
@@ -129,11 +164,6 @@ public class VentanaPrincipall extends javax.swing.JFrame {
 
         editorPromptzal.setText("EDITOR PROMPTZAL");
 
-        txtEditor.setColumns(20);
-        txtEditor.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        txtEditor.setRows(5);
-        jScrollPane1.setViewportView(txtEditor);
-
         tablaTokens.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -164,11 +194,6 @@ public class VentanaPrincipall extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("ERRORES", jScrollPane3);
 
-        txtPromptGenerado.setEditable(false);
-        txtPromptGenerado.setColumns(20);
-        txtPromptGenerado.setLineWrap(true);
-        txtPromptGenerado.setRows(5);
-        txtPromptGenerado.setWrapStyleWord(true);
         jScrollPane4.setViewportView(txtPromptGenerado);
 
         jButton1.setText("jButton1");
@@ -208,6 +233,8 @@ public class VentanaPrincipall extends javax.swing.JFrame {
             }
         });
 
+        jScrollPane5.setViewportView(txtEditor);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -216,12 +243,9 @@ public class VentanaPrincipall extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 988, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(427, 427, 427)
-                                .addComponent(editorPromptzal)))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(427, 427, 427)
+                        .addComponent(editorPromptzal)
+                        .addContainerGap(450, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -240,8 +264,11 @@ public class VentanaPrincipall extends javax.swing.JFrame {
                                 .addComponent(btnVerAST))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(jButton3)
-                                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 988, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 19, Short.MAX_VALUE))))
+                                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 988, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(8, 8, 8)
+                                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 996, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -257,13 +284,13 @@ public class VentanaPrincipall extends javax.swing.JFrame {
                     .addComponent(btnVerAST))
                 .addGap(57, 57, 57)
                 .addComponent(editorPromptzal)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(53, 53, 53)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton3)
-                .addContainerGap(56, Short.MAX_VALUE))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
 
         pack();
@@ -359,7 +386,7 @@ public class VentanaPrincipall extends javax.swing.JFrame {
              
         // Verifica si la compilacion fue exitosa
             if (compiladorActual.compilacionExitosa()) {
-                txtPromptGenerado.setText(compiladorActual.getPromptGenerado());
+                mostrarPromptGenerado(compiladorActual.getPromptGenerado());
                 txtPromptGenerado.setCaretPosition(0);
                 
                 JOptionPane.showMessageDialog(this,"Compilacion terminada correctamente.\n"+ "No se encontraron errores.",
@@ -659,7 +686,303 @@ public class VentanaPrincipall extends javax.swing.JFrame {
         tabla.setSelectionForeground(Color.WHITE);
     
     }
+    //****************CONFIGURAR COLORES DEL EDITOR****************
+
+    private void configurarColoresEditor() {
+        
+        StyledDocument documento = txtEditor.getStyledDocument();
+
+        // Texto normal / identificadores
+        estiloNormal = documento.addStyle(  "normal", null);
+        StyleConstants.setForeground(estiloNormal,Color.BLACK);
+
+        // Directivas: @modelo, @rol, @formato
+        estiloDirectiva = documento.addStyle("directiva", null);
+
+        StyleConstants.setForeground( estiloDirectiva, new Color(120, 60, 170));
+        StyleConstants.setBold( estiloDirectiva,true);
+
+        // AGENTE, contexto, variable, EJECUTAR, EXPORTAR
+        estiloReservada = documento.addStyle("reservada", null);
+        StyleConstants.setForeground(estiloReservada, new Color(0, 70, 180));
+        StyleConstants.setBold(estiloReservada,true);
+
+        // PREGUNTAR, RESUMIR, etc.
+        estiloComando = documento.addStyle("comando",null);
+        StyleConstants.setForeground( estiloComando,new Color(200, 90, 0));
+        StyleConstants.setBold(estiloComando,true );
+
+        // SOBRE, DESDE, EN, COMO
+        estiloConector = documento.addStyle("conector",null);
+        StyleConstants.setForeground( estiloConector,new Color(0, 130, 120));
+        StyleConstants.setBold( estiloConector,true);
+
+        // CARGAR
+        estiloFuncion = documento.addStyle( "funcion",null);
+        StyleConstants.setForeground( estiloFuncion,new Color(150, 0, 150));
+        StyleConstants.setBold(estiloFuncion, true);
+
+        // "Cadenas"
+        estiloCadena = documento.addStyle("cadena",null);
+        StyleConstants.setForeground(estiloCadena, new Color(0, 130, 50));
+
+        // 100, 25.5...
+        estiloNumero = documento.addStyle("numero",null);
+        StyleConstants.setForeground( estiloNumero, new Color(40, 90, 200) );
+
+        // = + ->
+        estiloOperador = documento.addStyle("operador", null);
+        StyleConstants.setForeground( estiloOperador,new Color(200, 40, 40));
+        StyleConstants.setBold(estiloOperador,true);
+
+        // { } ( ) ,
+        estiloDelimitador = documento.addStyle("delimitador",null);
+        StyleConstants.setForeground(estiloDelimitador,new Color(90, 90, 90));
+
+        // Detectar cambios mientras el usuario escribe
+        txtEditor.getDocument().addDocumentListener(
+            new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                actualizarColor();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                actualizarColor();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                // No se utiliza.
+            }
+
+            private void actualizarColor() {
+
+                SwingUtilities.invokeLater(() -> {
+
+                    colorearEditor();
+
+                });
+            }
+        });
+    }
     
+    //****************OBTENER POSICION DEL TOKEN****************
+    private int obtenerPosicion( String texto,int fila, int columna) {
+        int filaActual = 1;
+        int posicion = 0;
+
+        while (posicion < texto.length() && filaActual < fila) {
+            
+            if (texto.charAt(posicion) == '\n') {
+                filaActual++;
+            }
+
+            posicion++;
+        }
+
+        posicion += columna - 1;
+
+        if (posicion > texto.length()) {
+            posicion = texto.length();
+        }
+
+        return posicion;
+    }
+    
+    //****************COLOREAR EDITOR****************
+    private void colorearEditor() {
+        
+        try {
+            String texto = txtEditor.getText();
+            StyledDocument documento= txtEditor.getStyledDocument();
+
+            // Primero todo vuelve al estilo normal
+            documento.setCharacterAttributes(0,documento.getLength(),estiloNormal, true);
+
+            // Se analiza el texto con el mismo Lexer de JFlex
+            Lexer lexer = new Lexer(new StringReader(texto));
+            Token token;
+            
+            do {
+                token = lexer.yylex();
+                if (token.getTipo() != tipoToken.EOF) {
+                    Style estilo = obtenerEstiloToken(token.getTipo());
+                    int posicion = obtenerPosicion(texto,token.getFila(),token.getColumna());
+                    int longitud= token.getLexema().length();
+                    
+                    if (posicion + longitud <= documento.getLength()) {
+                        documento.setCharacterAttributes(posicion,longitud, estilo,true);
+                    }
+                }
+
+            } while (token.getTipo() != tipoToken.EOF);
+
+        } catch (Exception e) {
+
+            System.out.println("Error al colorear el editor");
+        }
+    }
+    
+    
+    //****************ESTILO SEGUN TOKEN****************
+    private Style obtenerEstiloToken(tipoToken tipo) {
+        switch (tipo) {
+            case DIRECTIVA:
+                return estiloDirectiva;
+                
+            case AGENTE:
+            case CONTEXTO:
+            case VARIABLE:
+            case EJECUTAR:
+            case EXPORTAR:
+
+                return estiloReservada;
+
+
+            case COMANDO_IA:
+
+                return estiloComando;
+
+
+            case CONECTOR:
+
+                return estiloConector;
+
+
+            case CARGAR:
+
+                return estiloFuncion;
+
+
+            case CADENA:
+
+                return estiloCadena;
+
+
+            case NUMERO:
+
+                return estiloNumero;
+
+
+            case FLECHA:
+            case IGUAL:
+            case MAS:
+
+                return estiloOperador;
+
+
+            case LLAVE_A:
+            case LLAVE_B:
+            case PAR_A:
+            case PAR_B:
+            case COMA:
+
+                return estiloDelimitador;
+
+
+            case ID:
+
+                return estiloNormal;
+
+
+            default:
+
+                return estiloNormal;
+        }
+    }
+    
+    //****************CONFIGURAR ESTILOS DEL PROMPT****************
+
+    private void configurarEstilosPrompt() {
+        
+        StyledDocument documento = txtPromptGenerado.getStyledDocument();
+
+        // Texto normal
+        estiloPromptNormal = documento.addStyle("promptNormal",null);
+        StyleConstants.setForeground(estiloPromptNormal,Color.BLACK);
+
+        // Titulo principal
+        estiloPromptTitulo = documento.addStyle("promptTitulo",null);
+        StyleConstants.setForeground(estiloPromptTitulo,new Color(0, 90, 75));
+        StyleConstants.setBold(estiloPromptTitulo,true);
+        StyleConstants.setFontSize(estiloPromptTitulo,16);
+
+        // Contexto, Fuentes, Instrucciones...
+        estiloPromptSeccion = documento.addStyle("promptSeccion", null);
+        StyleConstants.setForeground( estiloPromptSeccion,new Color(0, 70, 180));
+        StyleConstants.setBold( estiloPromptSeccion, true);
+
+        // Modelo, Rol, Formato
+        estiloPromptDato = documento.addStyle("promptDato",null);
+        StyleConstants.setForeground(estiloPromptDato,new Color(120, 60, 170));
+        StyleConstants.setBold(estiloPromptDato,true );
+
+        // AGENTE
+        estiloPromptAgente = documento.addStyle("promptAgente",null);
+        StyleConstants.setForeground(estiloPromptAgente, new Color(0, 130, 70));
+        StyleConstants.setBold( estiloPromptAgente,true );
+
+        // Resultados exportados
+        estiloPromptResultado = documento.addStyle("promptResultado", null );
+        StyleConstants.setForeground( estiloPromptResultado,new Color(200, 90, 0));
+        StyleConstants.setBold( estiloPromptResultado, true);
+    }
+    
+    
+    //****************MOSTRAR PROMPT GENERADO****************
+    private void mostrarPromptGenerado(String prompt) {
+        try {
+            
+            StyledDocument documento = txtPromptGenerado.getStyledDocument();
+
+            // Limpia el resultado anterior
+            documento.remove(0, documento.getLength());
+
+            String[] lineas = prompt.split("\n");
+            boolean enResultados = false;
+
+            for (String linea : lineas) {
+                Style estilo = estiloPromptNormal;
+
+                // Titulo principal
+                if (linea.contains("PROMPTZAL GENERADO")) {
+                    estilo = estiloPromptTitulo;
+
+                // Datos generales
+                } else if (linea.startsWith("Modelo:") || linea.startsWith("Rol:") || linea.startsWith("Formato:")) {
+                    estilo = estiloPromptDato;
+
+                // Agente
+                } else if (linea.startsWith("AGENTE:")) {
+                    estilo = estiloPromptAgente;
+
+                // Secciones
+                } else if (linea.equals("Contexto:") || linea.equals("Fuentes y variables:") || linea.equals("Instrucciones:") || linea.equals("Resultados a exportar:")) {
+                    estilo = estiloPromptSeccion;
+
+                    if (linea.equals("Resultados a exportar:")) {
+                        enResultados = true;
+                    }
+
+                // Elementos exportados
+                } else if (enResultados && linea.startsWith("- ")) {
+                    estilo = estiloPromptResultado;
+                }
+                
+                documento.insertString( documento.getLength(),linea + "\n", estilo);
+            }
+            
+            txtPromptGenerado.setCaretPosition(0);
+
+        } catch (Exception e) {
+
+            System.out.println("Error al mostrar el Prompt generado");
+            }
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAbrir;
@@ -674,14 +997,14 @@ public class VentanaPrincipall extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable tablaErrores;
     private javax.swing.JTable tablaTokens;
-    private javax.swing.JTextArea txtEditor;
-    private javax.swing.JTextArea txtPromptGenerado;
+    private javax.swing.JTextPane txtEditor;
+    private javax.swing.JTextPane txtPromptGenerado;
     // End of variables declaration//GEN-END:variables
 }

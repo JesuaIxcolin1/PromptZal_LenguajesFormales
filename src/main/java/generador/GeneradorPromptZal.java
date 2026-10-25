@@ -170,42 +170,21 @@ public class GeneradorPromptZal {
                 + quitarComillas(valor)
                 + ".";
     }
-
-
+    
     //****************GENERAR COMANDO******************
-
     private String generarComando(Comando comando) {
 
         String tipo = comando.getTipo();
-
         String principal = "";
 
         if (!comando.getArgumentos().isEmpty()) {
-
-            principal = quitarComillas(
-                    comando.getArgumentos().get(0)
-            );
+            principal = quitarComillas(comando.getArgumentos().get(0));
         }
 
-        String sobre = obtenerConector(
-                comando,
-                "SOBRE"
-        );
-
-        String desde = obtenerConector(
-                comando,
-                "DESDE"
-        );
-
-        String en = obtenerConector(
-                comando,
-                "EN"
-        );
-
-        String como = obtenerConector(
-                comando,
-                "COMO"
-        );
+        String sobre = obtenerConector(comando, "SOBRE");
+        String desde = obtenerConector(comando, "DESDE");
+        String en = obtenerConector(comando, "EN");
+        String como = obtenerConector(comando, "COMO");
 
         String texto = "";
 
@@ -213,30 +192,22 @@ public class GeneradorPromptZal {
         if (tipo.equals("PREGUNTAR")) {
 
             if (sobre != null) {
-
-                texto = "Basandote en "
-                        + quitarComillas(sobre)
-                        + ", responde: "
-                        + principal
-                        + ".";
-
+                texto = "Basandote en " + quitarComillas(sobre) + ", responde: " + principal + ".";
             } else {
-
-                texto = "Responde: "
-                        + principal
-                        + ".";
+                texto = "Responde: " + principal + ".";
             }
 
 
         } else if (tipo.equals("GENERAR")) {
 
-            texto = "Genera "
-                    + principal;
+            texto = "Genera " + principal;
+
+            if (sobre != null) {
+                texto += " basandote en " + quitarComillas(sobre);
+            }
 
             if (desde != null) {
-
-                texto += " a partir de "
-                        + quitarComillas(desde);
+                texto += " a partir de " + quitarComillas(desde);
             }
 
             texto += ".";
@@ -244,13 +215,10 @@ public class GeneradorPromptZal {
 
         } else if (tipo.equals("RESUMIR")) {
 
-            texto = "Resume "
-                    + principal;
+            texto = "Resume " + principal;
 
             if (en != null) {
-
-                texto += " en un maximo de "
-                        + quitarComillas(en);
+                texto += " en un maximo de " + quitarComillas(en);
             }
 
             texto += ".";
@@ -258,13 +226,14 @@ public class GeneradorPromptZal {
 
         } else if (tipo.equals("ANALIZAR")) {
 
-            texto = "Analiza "
-                    + principal;
+            texto = "Analiza " + principal;
 
             if (sobre != null) {
+                texto += " tomando en cuenta " + quitarComillas(sobre);
+            }
 
-                texto += " tomando en cuenta "
-                        + quitarComillas(sobre);
+            if (desde != null) {
+                texto += " desde " + quitarComillas(desde);
             }
 
             texto += ".";
@@ -272,13 +241,10 @@ public class GeneradorPromptZal {
 
         } else if (tipo.equals("TRADUCIR")) {
 
-            texto = "Traduce "
-                    + principal;
+            texto = "Traduce " + principal;
 
             if (en != null) {
-
-                texto += " a "
-                        + quitarComillas(en);
+                texto += " a " + quitarComillas(en);
             }
 
             texto += ".";
@@ -286,13 +252,10 @@ public class GeneradorPromptZal {
 
         } else if (tipo.equals("CLASIFICAR")) {
 
-            texto = "Clasifica "
-                    + principal;
+            texto = "Clasifica " + principal;
 
-            if (en != null) {
-
-                texto += " en "
-                        + quitarComillas(en);
+            if (como != null) {
+                texto += " como " + quitarComillas(como);
             }
 
             texto += ".";
@@ -300,13 +263,14 @@ public class GeneradorPromptZal {
 
         } else if (tipo.equals("EXTRAER")) {
 
-            texto = "Extrae "
-                    + principal;
+            texto = "Extrae " + principal;
+
+            if (sobre != null) {
+                texto += " sobre " + quitarComillas(sobre);
+            }
 
             if (desde != null) {
-
-                texto += " desde "
-                        + quitarComillas(desde);
+                texto += " desde " + quitarComillas(desde);
             }
 
             texto += ".";
@@ -314,28 +278,20 @@ public class GeneradorPromptZal {
 
         } else {
 
-            texto = tipo
-                    + " "
-                    + principal
-                    + ".";
+            texto = tipo + " " + principal + ".";
         }
 
 
-        // El conector COMO puede acompañar distintos comandos
+        // El conector COMO puede indicar formato en otros comandos
 
-        if (como != null) {
-
-            texto += " Entrega el resultado en formato "
-                    + quitarComillas(como)
-                    + ".";
+        if (como != null && !tipo.equals("CLASIFICAR")) {
+            texto += " Entrega el resultado en formato " + quitarComillas(como) + ".";
         }
 
 
         // Todos los comandos guardan un resultado
 
-        texto += " Guarda el resultado como "
-                + comando.getDestino()
-                + ".";
+        texto += " Guarda el resultado como " + comando.getDestino() + ".";
 
         return texto;
     }
