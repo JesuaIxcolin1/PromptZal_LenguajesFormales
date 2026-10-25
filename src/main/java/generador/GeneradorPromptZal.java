@@ -21,7 +21,7 @@ public class GeneradorPromptZal {
 
         StringBuilder salida = new StringBuilder();
 
-        salida.append("============PROMPTZAL GENERADO============\n\n");
+        salida.append("============PROMPTZAL GENERADO=============\n\n");
 
 
         //****************DIRECTIVAS******************

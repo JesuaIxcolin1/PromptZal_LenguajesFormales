@@ -15,6 +15,13 @@ import java.awt.Color;
 import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.table.JTableHeader;
+import compilador.CompiladorPromptZal;
+import java.io.FileWriter;
+import reportes.ReporteTablaSimbolos;
+import reportes.ReporteAST;
+import reportes.ReporteErrores;
+import reportes.ReporteTokens;
+
 
 /**
  *
@@ -24,6 +31,7 @@ public class VentanaPrincipall extends javax.swing.JFrame {
     
     private String rutaActual = null;
     private analizadorLexico analizadorActual;
+    private CompiladorPromptZal compiladorActual;
 
     /**
      * Creates new form VentanaPrincipall
@@ -32,7 +40,7 @@ public class VentanaPrincipall extends javax.swing.JFrame {
         initComponents();
         
         setLocationRelativeTo(null);
-        setTitle("PromptZal - Analizador Lexico");
+        setTitle("===============PROMPTZAL===============");
         
         aplicarEstilo();
     }
@@ -46,14 +54,13 @@ public class VentanaPrincipall extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
         btnAbrir = new javax.swing.JButton();
         btnGuardar = new javax.swing.JButton();
         btnAnalizar = new javax.swing.JButton();
         btnReporteTokens = new javax.swing.JButton();
         btnReporteErrores = new javax.swing.JButton();
-        btnReporteEstadisticas = new javax.swing.JButton();
-        btnAFD = new javax.swing.JButton();
+        btnTablaSimbolos = new javax.swing.JButton();
+        btnVerAST = new javax.swing.JButton();
         editorPromptzal = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtEditor = new javax.swing.JTextArea();
@@ -62,10 +69,14 @@ public class VentanaPrincipall extends javax.swing.JFrame {
         tablaTokens = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
         tablaErrores = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        txtPromptGenerado = new javax.swing.JTextArea();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jLabel1.setText("PROMPTZAL");
 
         btnAbrir.setText("ABRIR");
         btnAbrir.addActionListener(new java.awt.event.ActionListener() {
@@ -95,24 +106,24 @@ public class VentanaPrincipall extends javax.swing.JFrame {
             }
         });
 
-        btnReporteErrores.setText("REPORTE DE ERRORES");
+        btnReporteErrores.setText("REPORTE ERRORES");
         btnReporteErrores.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnReporteErroresActionPerformed(evt);
             }
         });
 
-        btnReporteEstadisticas.setText("ESTADISTICAS");
-        btnReporteEstadisticas.addActionListener(new java.awt.event.ActionListener() {
+        btnTablaSimbolos.setText("TABLA SIMBOLOS");
+        btnTablaSimbolos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReporteEstadisticasActionPerformed(evt);
+                btnTablaSimbolosActionPerformed(evt);
             }
         });
 
-        btnAFD.setText("VER AFD");
-        btnAFD.addActionListener(new java.awt.event.ActionListener() {
+        btnVerAST.setText("VER AST");
+        btnVerAST.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAFDActionPerformed(evt);
+                btnVerASTActionPerformed(evt);
             }
         });
 
@@ -153,6 +164,50 @@ public class VentanaPrincipall extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("ERRORES", jScrollPane3);
 
+        txtPromptGenerado.setEditable(false);
+        txtPromptGenerado.setColumns(20);
+        txtPromptGenerado.setLineWrap(true);
+        txtPromptGenerado.setRows(5);
+        txtPromptGenerado.setWrapStyleWord(true);
+        jScrollPane4.setViewportView(txtPromptGenerado);
+
+        jButton1.setText("jButton1");
+
+        jButton2.setText("GUARDAR PROMPT");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 975, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(131, 131, 131)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton2)
+                .addContainerGap())
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("PROMPT GENERADO", jPanel1);
+
+        jButton3.setText("GUARDAR PROMPT");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -165,10 +220,7 @@ public class VentanaPrincipall extends javax.swing.JFrame {
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 988, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(427, 427, 427)
-                                .addComponent(editorPromptzal))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(456, 456, 456)
-                                .addComponent(jLabel1)))
+                                .addComponent(editorPromptzal)))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -183,32 +235,35 @@ public class VentanaPrincipall extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(btnReporteErrores)
                                 .addGap(18, 18, 18)
-                                .addComponent(btnReporteEstadisticas)
+                                .addComponent(btnTablaSimbolos)
                                 .addGap(18, 18, 18)
-                                .addComponent(btnAFD))
-                            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 988, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 9, Short.MAX_VALUE))))
+                                .addComponent(btnVerAST))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jButton3)
+                                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 988, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 19, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
+                .addGap(36, 36, 36)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAbrir)
                     .addComponent(btnGuardar)
                     .addComponent(btnAnalizar)
                     .addComponent(btnReporteTokens)
                     .addComponent(btnReporteErrores)
-                    .addComponent(btnReporteEstadisticas)
-                    .addComponent(btnAFD))
+                    .addComponent(btnTablaSimbolos)
+                    .addComponent(btnVerAST))
                 .addGap(57, 57, 57)
                 .addComponent(editorPromptzal)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addGap(53, 53, 53)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButton3)
+                .addContainerGap(56, Short.MAX_VALUE))
         );
 
         pack();
@@ -275,111 +330,191 @@ public class VentanaPrincipall extends javax.swing.JFrame {
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalizarActionPerformed
-        // **************Analizar Codigo******************
+        //****************COMPILAR CODIGO PROMPTZAL******************
         String texto = txtEditor.getText();
         
-        //Verifica que haya contenido
-        if(texto.isEmpty()){
-            JOptionPane.showMessageDialog(this, "No hay contenido para analizar", "Analizador Lexico",
-                    JOptionPane.WARNING_MESSAGE);
+        // Verifica que haya contenido
+        if (texto.isEmpty()) {
+
+        JOptionPane.showMessageDialog(this, "No hay contenido para compilar","Compilador PromptZal",JOptionPane.WARNING_MESSAGE );
+        return;
+        }try {
+            // Crea el compilador
+            compiladorActual = new CompiladorPromptZal();
             
-            return;
-        }
-        
-        //Crea el analizador
-        analizadorActual = new analizadorLexico(texto);
-        //Realiza el analisis
-        analizadorActual.analizador();
-        
-        mostrarTokens();
-        mostrarErrores();
-        
-        JOptionPane.showMessageDialog(this,"Analisis lexico Terminado\n"+"Tokens Encontrados: "
-        +analizadorActual.getlistaTokens().size()+"\nErrores Encontrados: "+ analizadorActual.getlistaErrores().size());
-        
+            // Realiza todo el proceso de compilacion
+            compiladorActual.compilar(texto);
+            
+            //Muestra Tokens y errores en la tabla
+            mostrarTokens();
+            mostrarErrores();
+            
+            // Limpia el prompt anterior
+            txtPromptGenerado.setText("");
+
+             // Cantidad de errores encontrados
+             int erroresLexicos = compiladorActual.getErroresLexicos().size();
+             int erroresSintacticos = compiladorActual.getErroresSintacticos().size();
+             int erroresSemanticos = compiladorActual.getErroresSemanticos().size();
+             
+        // Verifica si la compilacion fue exitosa
+            if (compiladorActual.compilacionExitosa()) {
+                txtPromptGenerado.setText(compiladorActual.getPromptGenerado());
+                txtPromptGenerado.setCaretPosition(0);
+                
+                JOptionPane.showMessageDialog(this,"Compilacion terminada correctamente.\n"+ "No se encontraron errores.",
+                        "Compilador PromptZal",JOptionPane.INFORMATION_MESSAGE);
+
+            } else {
+                JOptionPane.showMessageDialog(this,"Compilacion terminada.\n\n"+ "Errores lexicos: " + erroresLexicos
+                        + "\nErrores sintacticos: "+ erroresSintacticos+ "\nErrores semanticos: "+ erroresSemanticos,"Compilador PromptZal",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Exception e) {
+            
+            JOptionPane.showMessageDialog(this,"Ocurrio un error durante la compilacion:\n"+ e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+        }    
     }//GEN-LAST:event_btnAnalizarActionPerformed
 
     private void btnReporteTokensActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteTokensActionPerformed
-        //***********Reporte de Tokens********************
-        if(analizadorActual == null){
-            JOptionPane.showMessageDialog(this, "Primero debe realizar un Analisis Lexico", "Reporte de Tokens", JOptionPane.WARNING_MESSAGE);
-            
-           return;
+        //****************REPORTE DE TOKENS****************
+        if (compiladorActual == null) {
+
+            JOptionPane.showMessageDialog(this,"Primero debe compilar el codigo", "Reporte de Tokens",JOptionPane.WARNING_MESSAGE);
+            return;
         }
+
+        ReporteTokens reporte = new ReporteTokens();
+        reporte.generar(compiladorActual);
         
-        reporteHTML reporte  = new reporteHTML();
-        reporte.generarReporteTokens(analizadorActual.getlistaTokens());
-        
-        try{
+        try {
+            
             File archivoReporte = new File("reporteTokens.html");
             Desktop.getDesktop().open(archivoReporte);
-            
-        }catch(IOException e){
-            JOptionPane.showMessageDialog(this, "No se pudo abrir el reporte de Tokens", "Error", JOptionPane.ERROR_MESSAGE);
+        
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this,"No se pudo abrir el reporte de Tokens","Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnReporteTokensActionPerformed
 
     private void btnReporteErroresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteErroresActionPerformed
-        //***********Reporte de Errores********************
-        if(analizadorActual == null){
-            JOptionPane.showMessageDialog(this, "Primero debe realizar un Analisis Lexico", "Reporte de Errores", JOptionPane.WARNING_MESSAGE);
+        //****************REPORTE DE ERRORES****************\
+        
+        if (compiladorActual == null) {
             
-           return;
+            JOptionPane.showMessageDialog(  this,"Primero debe compilar el codigo","Reporte de Errores",JOptionPane.WARNING_MESSAGE);
+            return;
         }
         
-        reporteHTML reporte  = new reporteHTML();
-        reporte.generarReporteErrores(analizadorActual.getlistaErrores());
+        ReporteErrores reporte = new ReporteErrores();
+        reporte.generar(compiladorActual);
         
-        try{
+        try {
             File archivoReporte = new File("reporteDeErrores.html");
             Desktop.getDesktop().open(archivoReporte);
             
-        }catch(IOException e){
-            JOptionPane.showMessageDialog(this, "No se pudo abrir el reporte de Errores", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this,"No se pudo abrir el reporte de Errores","Error",JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnReporteErroresActionPerformed
 
-    private void btnReporteEstadisticasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteEstadisticasActionPerformed
-        //***********Reporte de Estadisticas********************
-        if(analizadorActual == null){
-            JOptionPane.showMessageDialog(this, "Primero debe realizar un Analisis Lexico", "Reporte de Estadisticas", JOptionPane.WARNING_MESSAGE);
+    private void btnTablaSimbolosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTablaSimbolosActionPerformed
+        //****************REPORTE TABLA DE SIMBOLOS****************
+        if (compiladorActual == null) {
+            JOptionPane.showMessageDialog(this,"Primero debe compilar el codigo","Tabla de Simbolos",JOptionPane.WARNING_MESSAGE);
             
-           return;
+            return;
         }
         
-        reporteHTML reporte  = new reporteHTML();
-        reporte.generarReporteEstadisticas(analizadorActual.getlistaTokens(), analizadorActual.getlistaErrores(),txtEditor.getText());
+        if (compiladorActual.getTablaSimbolos() == null) {
+            JOptionPane.showMessageDialog(this,"No se puede generar la tabla de simbolos porque existen errores sintacticos",
+            "Tabla de Simbolos", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         
-        try{
-            File archivoReporte = new File("reporteEstadisticas.html");
+        ReporteTablaSimbolos reporte = new ReporteTablaSimbolos();
+        reporte.generar(compiladorActual.getTablaSimbolos());
+        
+        try {
+            File archivoReporte = new File("reporteTablaSimbolos.html");
             Desktop.getDesktop().open(archivoReporte);
-            
-        }catch(IOException e){
-            JOptionPane.showMessageDialog(this, "No se pudo abrir el reporte de Estadisticas", "Error", JOptionPane.ERROR_MESSAGE);
+        
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this,"No se pudo abrir el reporte de Tabla de Simbolos", "Error",JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_btnReporteEstadisticasActionPerformed
+    }//GEN-LAST:event_btnTablaSimbolosActionPerformed
 
-    private void btnAFDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAFDActionPerformed
-        //**********************Ver AFD*************************
-        GraphvizAFD graphviz = new GraphvizAFD();
-        graphviz.generarAFD();
-        
-        try{
-            File imagenAFD = new File("afd.png");
+    private void btnVerASTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerASTActionPerformed
+        //****************REPORTE AST****************
+        if (compiladorActual == null) {
             
-            if(imagenAFD.exists()){
-                Desktop.getDesktop().open(imagenAFD);
-                
-            }else{
-                JOptionPane.showMessageDialog(this, "No se pudo encontrar la imagen del AFD", "Error", JOptionPane.ERROR_MESSAGE);
-                
-            }
-        }catch(IOException e){
-        
-        
-            JOptionPane.showMessageDialog(this, "No se pudo abrir la imagen AFD", "Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,"Primero debe compilar el codigo","AST",JOptionPane.WARNING_MESSAGE);
+            return;
         }
-    }//GEN-LAST:event_btnAFDActionPerformed
+        
+        if (compiladorActual.getProgramaAST() == null) {
+            JOptionPane.showMessageDialog(this,"No se puede generar el AST","AST",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        ReporteAST reporte = new ReporteAST();
+        reporte.generar(compiladorActual.getProgramaAST());
+        
+        try {
+            File archivoReporte = new File("reporteAST.html");
+            Desktop.getDesktop().open(archivoReporte);
+        
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog( this,"No se pudo abrir el reporte AST", "Error",JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnVerASTActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    String prompt = txtPromptGenerado.getText();
+    
+    if (prompt.isEmpty()) {
+        JOptionPane.showMessageDialog( this,"No hay un PromptZal generado para guardar","Guardar Prompt",JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    JFileChooser selector = new JFileChooser();
+    selector.setDialogTitle("Guardar PromptZal");
+    FileNameExtensionFilter filtroMarkdown  = new FileNameExtensionFilter("Archivo Markdown (*.md)","md");
+    FileNameExtensionFilter filtroTexto= new FileNameExtensionFilter("Archivo de texto (*.txt)","txt");
+    
+    selector.addChoosableFileFilter(filtroMarkdown);
+    selector.addChoosableFileFilter(filtroTexto);
+    selector.setFileFilter(filtroMarkdown);
+
+    int opcion = selector.showSaveDialog(this);
+    
+    if (opcion == JFileChooser.APPROVE_OPTION) {
+        File archivo = selector.getSelectedFile();
+        String extension;
+        
+        if (selector.getFileFilter() == filtroTexto) {
+            extension = ".txt";
+        } else {
+            extension = ".md";
+        }
+
+        if (!archivo.getName().toLowerCase().endsWith(extension)) {
+
+            archivo = new File(archivo.getAbsolutePath()+ extension);
+        }try {
+
+            FileWriter escritor = new FileWriter(archivo);
+            escritor.write(prompt);
+            escritor.close();
+
+            JOptionPane.showMessageDialog(this,"PromptZal guardado correctamente","Guardar Prompt",JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            
+            JOptionPane.showMessageDialog(this,"No se pudo guardar el PromptZal","Error",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -415,32 +550,64 @@ public class VentanaPrincipall extends javax.swing.JFrame {
             }
         });
     }
+    
+    //****************MOSTRAR TOKENS****************
+    private void mostrarTokens() {
 
-//*********************MOSTRAR TOKENS***********************
-    private void mostrarTokens(){
-        DefaultTableModel modelo = (DefaultTableModel) tablaTokens.getModel();
-    
-    //Limpia la tabla
-    modelo.setRowCount(0);
-    for(Token token : analizadorActual.getlistaTokens()){
-        Object[] fila = {token.getNumero(),token.getLexema(),token.getTipo(),token.getFila(),token.getColumna()};
-        modelo.addRow(fila);
+        DefaultTableModel modelo
+                = (DefaultTableModel) tablaTokens.getModel();
+
+        // Limpia la tabla
+        modelo.setRowCount(0);
+
+        int numero = 1;
+
+        for (lexico.Token token : compiladorActual.getTokens()) {
+
+            // No mostramos EOF en la tabla
+            if (token.getTipo() != lexico.tipoToken.EOF) {
+
+                Object[] fila = {numero,token.getLexema(),token.getTipo(),token.getFila(), token.getColumna()};
+
+                modelo.addRow(fila);
+
+                numero++;
+            }
+        }
     }
     
-}
-    
-    //*********************MOSTRAR ERRORES************************
-    private void mostrarErrores(){
+    //****************MOSTRAR ERRORES****************
+    private void mostrarErrores() {
         DefaultTableModel modelo = (DefaultTableModel) tablaErrores.getModel();
-    
-    //Limpia la tabla
-    modelo.setRowCount(0);
-    for(errorLexico error : analizadorActual.getlistaErrores()){
-        Object[] fila = {error.getLexema(),error.getTipoError(),error.getFila(),error.getColumna()};
-        modelo.addRow(fila);
+        
+        // Limpia la tabla
+        modelo.setRowCount(0);
+
+
+        //****************ERRORES LEXICOS****************
+        for (lexico.errorLexico error : compiladorActual.getErroresLexicos()) {
+
+            Object[] fila = {error.getLexema(),"LEXICO: " + error.getTipoError(),error.getFila(),error.getColumna()};
+            modelo.addRow(fila);
+        }
+
+
+        //****************ERRORES SINTACTICOS****************
+        for (sintactico.errorSintactico error: compiladorActual.getErroresSintacticos()) {
+
+            Object[] fila = { error.getEncontrado(),"SINTACTICO: Se esperaba "+ error.getEsperado(),error.getFila(),error.getColumna()};
+            modelo.addRow(fila);
+        }
+
+
+        //****************ERRORES SEMANTICOS****************
+        for (semantico.errorSemantico error: compiladorActual.getErroresSemanticos()) {
+
+            Object[] fila = {"-","SEMANTICO: "+ error.getDescripcion(),error.getFila(), "-"};
+            modelo.addRow(fila);
+        }
     }
-}
-    
+
     //****************Aplicar estilo a la interfaz***********************
     private void aplicarEstilo(){
         Color verdeQuetzal = new Color(0, 122, 94);
@@ -463,8 +630,8 @@ public class VentanaPrincipall extends javax.swing.JFrame {
         estiloBotones(btnAnalizar, dorado);
         estiloBotones(btnReporteTokens, verdeClaro);
         estiloBotones(btnReporteErrores, rojo);
-        estiloBotones(btnReporteEstadisticas, verdeClaro);
-        estiloBotones(btnAFD, verdeQuetzal);
+        estiloBotones(btnTablaSimbolos, verdeClaro);
+        estiloBotones(btnVerAST, verdeQuetzal);
         
         estiloTablas(tablaTokens);
         estiloTablas(tablaErrores);
@@ -495,21 +662,26 @@ public class VentanaPrincipall extends javax.swing.JFrame {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAFD;
     private javax.swing.JButton btnAbrir;
     private javax.swing.JButton btnAnalizar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnReporteErrores;
-    private javax.swing.JButton btnReporteEstadisticas;
     private javax.swing.JButton btnReporteTokens;
+    private javax.swing.JButton btnTablaSimbolos;
+    private javax.swing.JButton btnVerAST;
     private javax.swing.JLabel editorPromptzal;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable tablaErrores;
     private javax.swing.JTable tablaTokens;
     private javax.swing.JTextArea txtEditor;
+    private javax.swing.JTextArea txtPromptGenerado;
     // End of variables declaration//GEN-END:variables
 }
